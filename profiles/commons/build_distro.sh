@@ -24,6 +24,7 @@ pull_git() {
 
 release_notes() {
   rm -rf rn.txt
+  pull_git $BUILD_PATH
   OUTPUT="<h2>Release Notes for $RELEASE</h2>"
   cd $BUILD_PATH/commons_profile
   OUTPUT="$OUTPUT <h3>Commons Profile:</h3> `drush rn --date $FROM_DATE $TO_DATE`"
@@ -38,6 +39,12 @@ release_notes() {
     fi
     cd ..
   done
+  cd $BUILD_PATH/repos/themes/commons_origins
+  RN=`drush rn --date $FROM_DATE $TO_DATE`
+  if [[ -n $RN ]]; then
+    OUTPUT="$OUTPUT <h3>commons_origins:</h3> $RN"
+  fi
+
   echo $OUTPUT >> $BUILD_PATH/rn.txt
 }
 
