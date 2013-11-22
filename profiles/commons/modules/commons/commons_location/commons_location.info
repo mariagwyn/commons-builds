@@ -7,10 +7,3 @@ dependencies[] = features
 dependencies[] = field_sql_storage
 features[features_api][] = api:2
 features[field_base][] = field_address
-
-; Information added by drupal.org packaging script on 2013-10-17
-version = "7.x-3.4"
-core = "7.x"
-project = "commons"
-datestamp = "1382042464"
-

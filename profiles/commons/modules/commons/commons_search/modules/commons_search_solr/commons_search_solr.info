@@ -27,10 +27,3 @@ features[variable][] = page_manager_search_disabled_apachesolr_search
 features[variable][] = pm_existing_pages_disabled_solr_search
 features[variable][] = search_active_modules
 features[variable][] = search_default_module
-
-; Information added by drupal.org packaging script on 2013-10-17
-version = "7.x-3.4"
-core = "7.x"
-project = "commons"
-datestamp = "1382042464"
-

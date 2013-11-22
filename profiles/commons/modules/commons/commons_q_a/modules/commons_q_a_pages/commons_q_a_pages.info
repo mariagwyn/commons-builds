@@ -11,10 +11,3 @@ features[features_api][] = api:2
 features[panelizer_defaults][] = node:question:default
 features[variable][] = panelizer_defaults_node_answer
 features[variable][] = panelizer_defaults_node_question
-
-; Information added by drupal.org packaging script on 2013-10-17
-version = "7.x-3.4"
-core = "7.x"
-project = "commons"
-datestamp = "1382042464"
-
