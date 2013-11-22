@@ -31,6 +31,7 @@ function shoutbox_group_schema() {
  */
 function shoutbox_group_install() {
   drupal_install_schema('shoutbox_group');
+  shoutbox_group_weight_module();
 }
 
 /**
@@ -41,10 +42,27 @@ function shoutbox_group_uninstall() {
 }
 
 /**
+ * Weight the module
+ */
+function shoutbox_group_weight_module() {
+  // This is needed so this module acts before OG modules,
+  // allowing it to set the context first, if needed.
+  db_query("UPDATE {system} SET weight = -5 WHERE name = 'shoutbox_group'");
+}
+
+/**
  * Accomodate shoutbox schema changes
  */
 function shoutbox_group_update_6200() {
   db_query("UPDATE {shoutbox} s INNER JOIN {shoutbox_groups} sg ON s.shout_id = sg.shout_id SET s.module = 'shoutbox_group'");
 
+  return array();
+}
+
+/**
+ * Update hook to weight the module
+ */
+function shoutbox_group_update_6201() {
+  shoutbox_group_weight_module();
   return array();
 }

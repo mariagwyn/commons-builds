@@ -1,5 +1,4 @@
 core = 6.x
-
 api = 2
 
 ; Modules
@@ -12,10 +11,14 @@ projects[admin][version] = "2.0"
 ; Leaving it there to simplify the upgrade process.
 projects[acquia_connector][subdir] = "acquia"
 
+projects[apachesolr][type] = "module"
+projects[apachesolr][download][type] = "git"
+projects[apachesolr][download][revision] = "6.x-1.x"
+projects[apachesolr][subdir] = "acquia/acquia_search"
+
 projects[acquia_search][type] = "module"
-projects[acquia_search][download][type] = "get"
-projects[acquia_search][download][url] = "http://network.acquia.com/files/downloads/acquia-search-current.tar.gz"
 projects[acquia_search][subdir] = "acquia"
+projects[acquia_search][version] = "1.5702"
 
 projects[ajax_load][version] = 1.x-dev
 projects[ajax_load][download][type] = "git"
@@ -23,21 +26,9 @@ projects[ajax_load][download][revision] = "8b0921252fcf599e7b15276bd815bcf81521e
 projects[ajax_load][subdir] = "contrib"
 
 ; Commons Answers dependencies:
-projects[answers][version] = 2.x-dev
-projects[answers][download][type] = "git"
-projects[answers][download][revision] = "6.x-2.x"
 projects[answers][subdir] ="contrib"
 
-; http://drupal.org/node/1414914
-projects[answers][patch][] = "http://drupal.org/files/answers-menu-links-overridden.patch"
-
-projects[vote_up_down][version] = 3.x-dev
-projects[vote_up_down][download][type] = "git"
-projects[vote_up_down][download][revision] = "6.x-3.x"
 projects[vote_up_down][subdir] = "contrib"
-
-; http://drupal.org/node/1016804#comment-5463316
-projects[vote_up_down][patch][]  = "http://drupal.org/files/thumbs_up_down_widget-1016804-14.patch"
 
 projects[views_attach][version] = 2.x-dev
 projects[views_attach][download][type] = "git"
@@ -61,10 +52,8 @@ projects[nodereference_url][subdir] = "contrib"
 projects[better_formats][subdir] = "contrib"
 
 projects[boxes][subdir] = "contrib"
-projects[boxes][version] = "1.0"
 
 projects[ctools][subdir] = "contrib"
-projects[ctools][version] = "1.8"
 
 projects[calendar][subdir] = "contrib"
 projects[calendar][version] = "2.4"
@@ -81,7 +70,7 @@ projects[cck][subdir] = "contrib"
 projects[cck][version] = "2.9"
 
 projects[context][subdir] = "contrib"
-projects[context][version] = "3.0"
+projects[context][version] = "3.1"
 
 ; Context patches in PATCHES.txt from Acquia Commons GitHub repo:
 
@@ -98,11 +87,6 @@ projects[diff][subdir] = "contrib"
 projects[diff][download][type] = "git"
 projects[diff][download][revision] = "6.x-2.x"
 
-; http://drupal.org/node/372957#comment-5458068
-projects[diff][patch][] = "http://drupal.org/files/372957-diff-strip-html-73.patch"
-
-projects[tagging][subdir] = "contrib"
-
 projects[editablefields][subdir] = "contrib"
 projects[editablefields][version] = "2.0"
 
@@ -116,10 +100,9 @@ projects[filefield][subdir] = "contrib"
 projects[filefield][version] = "3.10"
 
 projects[flag][subdir] = "contrib"
-projects[flag][version] = "1.3"
+projects[flag][version] = "1.4"
 
 projects[freelinking][subdir] = "contrib"
-projects[freelinking][version] = "1.10"
 
 projects[getid3][subdir] = "contrib"
 
@@ -178,22 +161,15 @@ projects[notifications][subdir] = "contrib"
 projects[notifications][version] = "2.3"
 
 projects[og][subdir] = "contrib"
-projects[og][version] = "2.2"
+projects[og][version] = "2.4"
 
 ; OG patches in PATCHES.txt from Acquia Commons GitHub repo:
-
-; http://drupal.org/node/1051258
-projects[og][patch][] = "http://drupal.org/files/issues/og_notifications-add-form-labels.patch"
 
 ; http://drupal.org/node/835030
 ;projects[og][patch][] = "http://drupal.org/files/issues/og_notifications-subscriptions-not-saving-835030.patch"
 
 ; http://drupal.org/node/1128492
 projects[og][patch][] = "http://drupal.org/files/issues/og_views-add-leave-group-field.patch"
-
-; http://drupal.org/node/793588#comment-5304624
-projects[og][patch][] = "http://drupal.org/files/add_uid_index_to_og_uid-793588-4-D6.patch"
-
 
 projects[og_aggregator][subdir] = "contrib"
 projects[og_aggregator][version] = "1.4"
@@ -214,7 +190,6 @@ projects[og_aggregator][version] = "1.4"
 
 
 projects[og_features][subdir] = "contrib"
-projects[og_features][version] = "1.x-dev"
 
 projects[og_invite_link][subdir] = "contrib"
 
@@ -230,9 +205,6 @@ projects[og_statistics][patch][] = "http://drupal.org/files/issues/og_statistics
 ; http://drupal.org/node/1162928#comment-4491270
 projects[og_statistics][patch][] = "http://drupal.org/files/issues/og_statistics-proper-determination-of-unapproved-1162928_0.patch"
 
-; http://drupal.org/node/1430246#comment-5566234
-projects[og_statistics][patch][] = "http://drupal.org/files/1430246-og_statistics-filter-group-posts-d.patch"
-
 projects[og_subgroups][subdir] = "contrib"
 
 
@@ -240,13 +212,10 @@ projects[password_policy][subdir] = "contrib"
 
 projects[pathauto][subdir] = "contrib"
 
-projects[quant][version] = 1.x-dev
-projects[quant][download][type] = "git"
-projects[quant][download][revision] = "2d204b2"
 projects[quant][subdir] = "contrib"
 
 projects[rules][subdir] = "contrib"
-projects[rules][version] = "1.4"
+projects[rules][version] = "1.5"
 ; http://drupal.org/node/978620#comment-3763720
 projects[rules][patch][] = "http://drupal.org/files/issues/rules.rules_defaults_alter_0.patch"
 
@@ -261,7 +230,7 @@ projects[tagadelic_views][version] = "1.2"
 projects[token][subdir] = "contrib"
 
 projects[transliteration][subdir] = "contrib"
-projects[transliteration][version] = "3.0"
+projects[transliteration][version] = "3.1"
 
 projects[userpoints_contrib][version] = 1.x-dev
 projects[userpoints_contrib][subdir] = "contrib"
@@ -284,12 +253,13 @@ projects[user_relationships][download][type] = "git"
 ; UR's last release was ~1 year ago with some non-trivial commits since then.
 projects[user_relationships][download][revision] = "6.x-1.x"
 
+; User_relationships patches in PATCHES.txt from Acquia Commons GitHub repo:
+; http://drupal.org/node/1121038#comment-6198978
+projects[user_relationships][patch][] = "http://drupal.org/files/1121038-user-relationships-disable-notifications-8.patch"
+
 ; http://drupal.org/node/1322858#comment-5171120
 projects[user_relationships][patch][] = "http://drupal.org/files/ur_alter_remove_links.patch"
 
-; User_relationships patches in PATCHES.txt from Acquia Commons GitHub repo:
-; http://drupal.org/node/1121038#comment-4322488
-projects[user_relationships][patch][] = "http://drupal.org/files/issues/user_relationships_disable_notifications_0_0.patch"
 
 projects[user_terms][subdir] = "contrib"
 
@@ -305,6 +275,8 @@ projects[userpoints_nc][patch][] = "http://drupal.org/files/issues/userpoints_nc
 
 projects[userpoints_user_picture][subdir] = "contrib"
 projects[userpoints_user_picture][version] = "1.2"
+; http://drupal.org/node/1075668#comment-5926324
+projects[userpoints_user_picture][patch][] = "http://drupal.org/files/userpoints_user_picture_undefined_index_fix_1075668_7.patch"
 
 projects[vertical_tabs][subdir] = "contrib"
 
@@ -313,17 +285,13 @@ projects[views][subdir] = "contrib"
 ; http://drupal.org/node/402944#comment-4650020
 projects[views][patch][] = "http://drupal.org/files/issues/views-402944-31.patch"
 
-; The dev branch has a revised UI for determining cache criteria.
 projects[views_content_cache][subdir] = "contrib"
-projects[views_content_cache][download][type] = "git"
-projects[views_content_cache][download][url] = "http://git.drupal.org/project/views_content_cache.git"
-projects[views_content_cache][download][revision] = "6.x-2.x"
+projects[views_content_cache][version] = "2.3"
 
 projects[views_field_view][subdir] = "contrib"
 
-
 projects[views_slideshow][subdir] = "contrib"
-projects[views_slideshow][version] = "2.3"
+projects[views_slideshow][version] = "2.4"
 
 projects[wikitools][subdir] = "contrib"
 projects[wikitools][version] = "1.3"
@@ -351,9 +319,6 @@ projects[activity_log][subdir] = "contrib"
 ; http://drupal.org/node/1306252#comment-5412352
 projects[activity_log][patch][] = "http://drupal.org/files/1306252-activity_log_node_og_dupes-b.patch"
 
-; http://drupal.org/node/1426576#comment-5596988
-projects[activity_log][patch][] = "http://drupal.org/files/1426576-activity-log-avatar-resize.patch"
-
 projects[digests][version] = 1.x-dev
 projects[digests][download][type] = "git"
 projects[digests][download][revision] = "6.x-1.x"
@@ -367,10 +332,8 @@ projects[tidy_node_links][download][revision] = "6.x-1.x"
 projects[tidy_node_links][type] = "module"
 projects[tidy_node_links][subdir] = "contrib"
 
-projects[facebook_status][version] = 3.x-dev
-projects[facebook_status][download][type] = "git"
-projects[facebook_status][download][revision] = "6.x-3.x"
 projects[facebook_status][subdir] = "contrib"
+projects[facebook_status][version] = "3.1"
 
 projects[fbsmp][version] = 2.x-dev
 projects[fbsmp][subdir] = "contrib"
@@ -392,5 +355,3 @@ projects[image][subdir] = "contrib"
 ; Themes:
 
 projects[fusion][type] = "theme"
-
-

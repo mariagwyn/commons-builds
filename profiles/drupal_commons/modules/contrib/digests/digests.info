@@ -4,3 +4,11 @@ dependencies[] = activity_log
 dependencies[] = mimemail
 package = Activity Log
 core = 6.x
+
+
+; Information added by drush on 2013-01-18
+version = "6.x-1.0+1-dev"
+core = "6.x"
+project = "digests"
+datestamp = "1358473505"
+

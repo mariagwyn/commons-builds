@@ -204,6 +204,12 @@ function quant_admin_settings() {
     '#required' => TRUE,
     '#description' => t('Specify the graph height in pixels. The Chart API will reject charts that are too tall.'),
   );
+  $form['display']['quant_use_images'] = array(
+    '#type' => 'checkbox',
+    '#title' => t('Use chart images'),
+    '#default_value' => variable_get('quant_use_images', 1),
+    '#description' => t('If selected, chart images will be used to display the data, otherwise tables will be used.'),
+  );
   
   // Generate the color palette
   $palette = _quant_load_palette();

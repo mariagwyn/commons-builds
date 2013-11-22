@@ -272,7 +272,7 @@ class ViewsContentCacheViewsPluginTest extends DrupalWebTestCase {
 
 
 
-class ViewsContentCacheUnitTest extends DrupalUnitTestCase {
+class ViewsContentCacheUnitTest extends DrupalWebTestCase {
 
   function getInfo() {
     return array(

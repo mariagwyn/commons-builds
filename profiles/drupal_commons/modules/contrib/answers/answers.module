@@ -1,9 +1,10 @@
 <?php
 
 include_once('answers.features.inc');
-module_load_include('inc', 'answers', 'includes/answers.search');
-module_load_include('inc', 'answers', 'includes/answers.notify');
+module_load_include('inc', 'answers', 'includes/answers.display');
 module_load_include('inc', 'answers', 'includes/answers.lock');
+module_load_include('inc', 'answers', 'includes/answers.notify');
+module_load_include('inc', 'answers', 'includes/answers.search');
 
 /**
  * Implements hook_help().
@@ -53,6 +54,7 @@ function answers_menu_alter(&$items) {
  * Answer administer settings form definition.
  */
 function answers_settings() {
+  $form['display'] = _answers_display_settings();
   $form['notify'] = _answers_notify_settings();
   return system_settings_form($form);
 }
@@ -61,10 +63,8 @@ function answers_settings() {
  * Implements hook_nodeapi().
  *
  */
-function answers_nodeapi(&$node, $op, $teaser) {
+function answers_nodeapi(&$node, $op, $teaser, $page) {
   global $user;
-
-  _answers_notify_nodeapi($node, $op, $teaser);
 
   switch ($op) {
 
@@ -79,7 +79,7 @@ function answers_nodeapi(&$node, $op, $teaser) {
         if ($locked_p == $field['widget']['node_link']['full']) {
           module_load_include('inc', 'content', 'includes/content.crud');
           $field['widget']['node_link']['full'] = $locked_p ? +0 : +1;
-      content_field_instance_update($field);
+          content_field_instance_update($field);
         }
       }
       break;
@@ -94,6 +94,10 @@ function answers_nodeapi(&$node, $op, $teaser) {
       break;
 
   }
+
+  _answers_display_nodeapi($node, $op, $teaser, $page);
+  _answers_notify_nodeapi($node, $op, $teaser);
+
 }
 
 /**
@@ -128,7 +132,8 @@ function _answers_question_answers($question) {
 function answers_form_question_node_form_alter(&$form, &$form_state) {
 
   // Change the name of the submit button.
-  $form['buttons']['submit']['#value'] = t('Ask Your Question');
+  $prompt = (arg(1) == 'add') ? t('Ask Your Question') : t('Update Your Question');
+  $form['buttons']['submit']['#value'] = $prompt;
 
   // Populate title field if passed via URL if access to edit title.
   if (isset($_GET['title']) && (!isset($form['#access']) || !empty($form['#access']))) {
@@ -141,7 +146,15 @@ function answers_form_question_node_form_alter(&$form, &$form_state) {
  * Implements hook_form_FORM_ID_alter() for answer_node_form().
  */
 function answers_form_answer_node_form_alter(&$form, &$form_state) {
-  $form['actions']['submit']['#value'] = t('Post Your Answer');
+  // Change the name of the submit button
+  $prompt = (arg(1) == 'add') ? t('Post Your Answer') : t('Update Your Answer');
+  $form['buttons']['submit']['#value'] = $prompt; 
+  $form['#after_build'][] = 'answers_form_answer_node_form_after_build'; 
+}
+
+function answers_form_answer_node_form_after_build($form, &$form_state) {
+  $form['field_answer_question']['#type'] = 'hidden';
+  return $form;
 }
 
 /**
@@ -162,12 +175,28 @@ function answers_field_access($op, $field, $account, $node = NULL) {
   if ($field['field_name'] == 'field_question_locked_p') {
     return FALSE;
   }
-  // Hide links to the answer node in places such as the question_answers view,
+  
+   // Hide links to the answer node in places such as the question_answers view,
   // which uses the full build mode to display answers.
-  if ($field['field_name'] == 'field_answer_question') {
+  if ($field['field_name'] == 'field_answer_question' && $op == 'view') {
     $node = menu_get_object('node');
     if ($node->type != 'answer') {
       return FALSE;
     }
   }
+  
 }
+
+/**
+ * Implements hook_theme_registry_alter
+ * 
+ * Have drupal look in the module for content-type override templates
+ */
+function answers_theme_registry_alter(&$theme_registry) {
+  $template = 'node';
+  $originalpath = array_shift($theme_registry[$template]['theme paths']);
+  $modulepath = drupal_get_path('module', 'answers');
+  // Stick the original path with the module path back on top
+  array_unshift($theme_registry[$template]['theme paths'], $originalpath, $modulepath);
+}
+

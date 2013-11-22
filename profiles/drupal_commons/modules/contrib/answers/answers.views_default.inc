@@ -11,10 +11,9 @@ function answers_views_default_views() {
   $view->name = 'all_questions';
   $view->description = 'List of all questions';
   $view->tag = 'Answers';
-  $view->view_php = '';
   $view->base_table = 'node';
-  $view->is_cacheable = FALSE;
-  $view->api_version = 2;
+  $view->core = 0;
+  $view->api_version = '2';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
   $handler = $view->new_display('default', 'Defaults', 'default');
   $handler->override_option('fields', array(
@@ -450,10 +449,9 @@ function answers_views_default_views() {
   $view->name = 'question_answers';
   $view->description = 'Show the answers to a question';
   $view->tag = 'Answers';
-  $view->view_php = '';
   $view->base_table = 'node';
-  $view->is_cacheable = FALSE;
-  $view->api_version = 2;
+  $view->core = 0;
+  $view->api_version = '2';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
   $handler = $view->new_display('default', 'Defaults', 'default');
   $handler->override_option('relationships', array(
@@ -605,7 +603,7 @@ function answers_views_default_views() {
       'field' => 'field_answer_question_nid',
       'validate_user_argument_type' => 'uid',
       'validate_user_roles' => array(
-        '2' => 0,
+        2 => 0,
       ),
       'relationship' => 'none',
       'default_options_div_prefix' => '',
@@ -631,9 +629,9 @@ function answers_views_default_views() {
       'validate_argument_node_access' => 0,
       'validate_argument_nid_type' => 'nid',
       'validate_argument_vocabulary' => array(
-        '1' => 0,
-        '3' => 0,
-        '2' => 0,
+        1 => 0,
+        3 => 0,
+        2 => 0,
       ),
       'validate_argument_type' => 'tid',
       'validate_argument_transform' => 0,
@@ -691,7 +689,7 @@ function answers_views_default_views() {
     'question' => 'question',
   ));
   $handler->override_option('modes', array(
-    '0' => 'full',
+    0 => 'full',
   ));
   $handler->override_option('argument_mode', 'nid');
   $handler->override_option('default_argument', '');
@@ -703,10 +701,9 @@ function answers_views_default_views() {
   $view->name = 'user_answers';
   $view->description = 'Show all questions which a user has answered';
   $view->tag = 'Answers';
-  $view->view_php = '';
   $view->base_table = 'node';
-  $view->is_cacheable = FALSE;
-  $view->api_version = 2;
+  $view->core = 0;
+  $view->api_version = '2';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
   $handler = $view->new_display('default', 'User Answers', 'default');
   $handler->override_option('relationships', array(
@@ -841,7 +838,7 @@ function answers_views_default_views() {
       'field' => 'uid',
       'validate_user_argument_type' => 'uid',
       'validate_user_roles' => array(
-        '2' => 2,
+        2 => 2,
       ),
       'relationship' => 'none',
       'default_options_div_prefix' => '',
@@ -938,10 +935,9 @@ function answers_views_default_views() {
   $view->name = 'user_questions';
   $view->description = 'Questions the user has asked';
   $view->tag = 'Answers';
-  $view->view_php = '';
   $view->base_table = 'node';
-  $view->is_cacheable = FALSE;
-  $view->api_version = 2;
+  $view->core = 0;
+  $view->api_version = '2';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
   $handler = $view->new_display('default', 'Defaults', 'default');
   $handler->override_option('fields', array(
@@ -1065,7 +1061,7 @@ function answers_views_default_views() {
       'field' => 'uid',
       'validate_user_argument_type' => 'uid',
       'validate_user_roles' => array(
-        '2' => 2,
+        2 => 2,
       ),
       'relationship' => 'none',
       'default_options_div_prefix' => '',

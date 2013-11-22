@@ -32,7 +32,9 @@ class views_content_cache_test_plugin_cache extends views_content_cache_plugin_c
           if (!$cutoff || $cache->created > $cutoff) {
             $this->view->result = $cache->data['result'];
             $this->view->total_rows = $cache->data['total_rows'];
-            $this->view->pager = $cache->data['pager'];
+            // I don't know why we need this ternary operator here, but the
+            // testbot was giving notices otherwise.
+            $this->view->pager = isset($cache->data['pager']) ? $cache->data['pager'] : NULL;
             $this->view->execute_time = 0;
             $this->view->build_info['cached_results'] = TRUE;
             return TRUE;

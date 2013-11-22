@@ -19,7 +19,8 @@ function quant_generate_chart(&$quant) {
   // Set the size of the chart
   quant_chart_add_size($quant);
   // Generate and return the chart
-  $function = "_quant_generate_chart_{$quant->dataType}";
+  $output = variable_get('quant_use_images', TRUE) ? 'chart' : 'table';
+  $function = "_quant_generate_{$output}_{$quant->dataType}";
   $function($quant);
 }
 
@@ -144,6 +145,22 @@ function _quant_generate_chart_count(&$quant) {
 }
 
 /**
+ * Take formatted data for a count chart and convert to 
+ * a tabular format
+ */
+function _quant_generate_table_count(&$quant) {
+  $label = "<h3>{$quant->label}</h3>"; 
+  $width = $quant->chart['#size']['#width'];
+  $headers = array(t('Label'), t('Count'));
+  $rows = array();
+  foreach ($quant->data as $title => $count) {
+    $rows[] = array($title, $count);
+  }
+  $table = theme('table', $headers, $rows);
+  $quant->render = "<div class=\"quant-table\" style=\"width: {$width}px;\">{$label}{$table}</div>";
+}
+
+/**
  * Take formatted data for a single-point chart and convert to 
  * a format that the charts can understand
  */
@@ -166,6 +183,22 @@ function _quant_generate_chart_single(&$quant) {
   quant_y_range($quant, 0, $max);
 
   $quant->render = chart_render($quant->chart);
+}
+
+/**
+ * Take formatted data for a single-point chart and convert to 
+ * a tabular format
+ */
+function _quant_generate_table_single(&$quant) {
+  $label = "<h3>{$quant->label}</h3>"; 
+  $width = $quant->chart['#size']['#width'];
+  $headers = array(t('Date'), t('Count'));
+  $rows = array();
+  foreach ($quant->data as $date => $count) {
+    $rows[] = array($date, $count);
+  }
+  $table = theme('table', $headers, $rows);
+  $quant->render = "<div class=\"quant-table\" style=\"width: {$width}px;\">{$label}{$table}</div>";
 }
 
 /**
@@ -202,6 +235,26 @@ function _quant_generate_chart_multiple(&$quant) {
   quant_y_range($quant, 0, $max);
 
   $quant->render = chart_render($quant->chart);
+}
+
+/**
+ * Take formatted data for a multi-point chart and convert to 
+ * a tabular format
+ */
+function _quant_generate_table_multiple(&$quant) {
+  $label = "<h3>{$quant->label}</h3>"; 
+  $width = $quant->chart['#size']['#width'];
+  $headers = array(t('Label'), t('Data'));
+  $rows = array();
+  foreach ($quant->data as $item => $data) {
+    $irows = array();
+    foreach ($data as $date => $count) {
+      $irows[] = array($date, $count);
+    }
+    $rows[] = array($item, theme('table', array(t('Date'), t('Count')), $irows));
+  }
+  $table = theme('table', $headers, $rows);
+  $quant->render = "<div class=\"quant-table\" style=\"width: {$width}px;\">{$label}{$table}</div>";
 }
 
 /**

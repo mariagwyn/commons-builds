@@ -68,6 +68,7 @@ function fbsmp_save_status($recipient, $type, $status_text, $attach_type, $attac
       'timed override' => FALSE,
       'discard blank statuses' => FALSE,
       'has attachment' => !empty($attach_data),
+      'form_state' => array(),
     ),
   );
 
@@ -756,6 +757,7 @@ function _fbsmp_clear_cache() {
 function _fbsmp_get_fbss_alerts() {
   $alerts = array(
     'activity2' => module_exists('fbss_activity'),
+    'facebook_status' => array(),
     'rules' => module_exists('fbss_rules'),
     'userpoints' => module_exists('fbss_userpoints'),
     'twitter' => module_exists('fbss_twitter'),
@@ -869,7 +871,7 @@ function fbsmp_edit_status_submit(&$form, &$form_state) {
     $attachment_data = $function($attachment, $form, $form_state);
   }
   $status_old = facebook_status_load($form_state['values']['sid']);
-  $account = user_load(array('uid' => $status_old->uid));
+  $account = user_load(array('uid' => $status_old->recipient));
   $new_status_text = trim($form_state['values']['fbss-status']);
   
   $attachment->data = $attachment_data;
@@ -1109,13 +1111,15 @@ function fbsmp_status_form_submit(&$form, &$form_state, $attachment_data = '') {
   $recipient = $context['handler']->load_recipient($rid);
   $new_status = trim($form_state['values']['fbss-status']);
   $default = $form_state['values']['sdefault'];
+  $alerts = _fbsmp_get_fbss_alerts();
+  $alerts['facebook_status']['form_state'] = $form_state;
   
   //Don't save the status_text if it wasn't changed from the default.
   if (variable_get('fbsmp_ignore_sdefault', 0) && $new_status == $default) {
     $new_status = '';
   }
 
-  $status = fbsmp_save_status($recipient, $type, $new_status, $ac_plugin, $attachment_data, NULL, _fbsmp_get_fbss_alerts());
+  $status = fbsmp_save_status($recipient, $type, $new_status, $ac_plugin, $attachment_data, NULL, $alerts);
   
   if (module_exists('fbss_twitter') && !empty($form_state['values']['twitter'])) {
     $options = array(
@@ -1419,7 +1423,8 @@ function fbsmp_fbsmp($op, $status) {
   if ($status->type = 'user') {
     $status->uid = $status->recipient;
   }
-  
+  $sender = _facebook_status_user_load($status->sender);
+
   $context = array(
     'hook' => 'fbsmp',
     'op' => $op,
@@ -1427,7 +1432,7 @@ function fbsmp_fbsmp($op, $status) {
     'fbsmp' => $attachment,
   );
 
-  actions_do(array_keys($aids), $poster, $context);
+  actions_do(array_keys($aids), $sender, $context);
 }
 
 //======================

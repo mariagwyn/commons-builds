@@ -4,3 +4,10 @@ core = 6.x
 package = Facebook-style Statuses
 dependencies[] = facebook_status
 dependencies[] = ctools
+
+; Information added by drush on 2013-01-18
+version = "6.x-2.0+6-dev"
+core = "6.x"
+project = "fbsmp"
+datestamp = "1358473511"
+

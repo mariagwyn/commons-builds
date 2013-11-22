@@ -118,7 +118,9 @@ function answers_notify_new_answer($nid) {
     $body_template = variable_get('answers_answer_notification_body', ANSWERS_DEFAULT_NEW_ANSWER_NOTICE_BODY);
     $body = t($body_template, $params,  $language->language);
 
-    $headers['MIME-Version'] = '1.0';
+	if (!module_exists('mimemail')) {
+      $headers['MIME-Version'] = '1.0';
+    }
     $headers['Content-Type'] = "text/html";
     $headers['From'] = variable_get('site_mail', ini_get('sendmail_from'));
 

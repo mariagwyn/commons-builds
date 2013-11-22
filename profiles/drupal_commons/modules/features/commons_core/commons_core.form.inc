@@ -106,25 +106,6 @@ function commons_core_form_views_exposed_form_alter(&$form, &$form_state) {
 }
 
 /**
- * Implementation of hook_form_FORM_ID_alter()
- * 
- * Alter the Tagging admin settings form
- */
-function commons_core_form_tagging_admin_settings_alter(&$form, &$form_state) {
-  // Remove checkbox
-  unset($form['tagging_show_suggestion_example']);
-  
-  // Add a field to supply static suggestions
-  $form['commons_tag_suggestions'] = array(
-    '#type' => 'textarea',
-    '#title' => t('Static tag suggestions'),
-    '#description' => t('Enter a comma-separated list of terms that will show up as tag suggestions when creating content items.'),
-    '#weight' => -5,
-    '#default_value' => variable_get('commons_tag_suggestions', ''),
-  );
-}
-
-/**
  * Alter a node form
  */
 function commons_core_node_form_alter(&$form, &$form_state) {
@@ -286,7 +267,7 @@ function commons_core_group_create_content_block_form(&$form_state) {
         // Load the node type
         if ($type = node_get_types('type', $type)) {
           // Add the type
-          $types[$type->type] = $type->name;
+          $types[$type->type] = t($type->name);
         }
       }
     }
@@ -298,7 +279,7 @@ function commons_core_group_create_content_block_form(&$form_state) {
       if (og_is_group_post_type($id)) {
         // Check create permissions
         if (node_access('create', $id)) {
-          $types[$id] = $type->name;
+          $types[$id] = t($type->name);
         } 
       }
     }
@@ -434,6 +415,7 @@ function commons_core_join_form() {
             // Remove description
             unset($pfield['#description']);
             // Add to our form
+            $pfield['#title'] = t($pfield['#title']);
             $form[$pkey] = $pfield;
           }
           unset($rform[$key][$pkey]);
@@ -486,29 +468,37 @@ function commons_core_join_form() {
 function commons_core_form_search_theme_form_alter(&$form, &$form_state) {
   $path = drupal_get_path('module', 'commons_core');
   drupal_add_js($path . '/js/commons_core.js');
-  drupal_add_css($path . '/css/commons_core.css');
-  
+  drupal_add_css($path . '/css/commons_core.css');  
   $options = array();
-  $group = NULL;
-  $form_state['solr'] = module_exists('apachesolr_search');
-  $menu_item = menu_get_item($_GET['q']);
-  
-  if ($form_state['group'] = og_features_get_group_context()) {
+  $menu_item = menu_get_item();
+  $form['apachesolr_og'] = array(
+    '#type' => 'value',
+    '#value' => module_exists('apachesolr_og') && variable_get('apachesolr_search_make_default', 0),
+  );
+  $form['apachesolr'] = array(
+    '#type' => 'value',
+    '#value' => module_exists('apachesolr_search') && variable_get('apachesolr_search_make_default', 0),
+  );
+
+
+  if ($form_state['group'] = og_get_group_context()) {
     // If a node is being viewed, add the nodes type within the group as a search
     // context option.
+
+    $group_title = $form_state['group']->title;
+    // Truncate the title, if needed
+    $limit = variable_get('commons_search_group_title_length', 20);
+    if ($limit && drupal_strlen($group_title) > $limit) {
+      $group_title = truncate_utf8($group_title, $limit, TRUE, TRUE);
+    }
     if (is_array($menu_item['load_functions']) && $key = array_search('node_load', $menu_item['load_functions'])) {
       $form_state['node'] = $menu_item['map'][$key];
       if ($form_state['solr'] && $form_state['node'] != $form_state['group']) {
-        $options['type'] = t('@type posts in @group', array('@type' => ucfirst($form_state['node']->type), '@group' => $form_state['group']->title));
+        $options['type'] = t('@type posts in @group', array('@type' => ucfirst($form_state['node']->type), '@group' => $group_title));
       }
     }
     // Add the group as a possible search context.
-    $options['group'] = check_plain($form_state['group']->title);
-    // Truncate the title, if needed
-    $limit = variable_get('commons_search_group_title_length', 30);
-    if ($limit && strlen($options['group']) > $limit) {
-      $options['group'] = substr($options['group'], 0, $limit) . '...';
-    }
+    $options['group'] = check_plain($group_title);
   }
 
   $options['site'] = t('Entire site');
@@ -528,10 +518,15 @@ function commons_core_form_search_theme_form_alter(&$form, &$form_state) {
   $form['submit']['#weight'] = 2;
   $form['search_theme_form']['#title'] = t('Search');
   
-  // Replace the core search submit handler with our own
-  foreach ($form['#submit'] as $key => $callback) {
-    if ($callback == 'search_box_form_submit') {
-      $form['#submit'][$key] = 'commons_core_search_submit';
+
+  $key = array_search('search_box_form_submit', $form['#submit']);
+  if ($key !== FALSE) {
+    // Replace the search module's function.
+    $form['#submit'][$key] = 'commons_core_search_submit';
+  }
+  else {
+    if (!in_array('commons_core_search_submit', $form['#submit'])) {
+      $form['#submit'][] = 'commons_core_search_submit';
     }
   }
 }
@@ -540,7 +535,36 @@ function commons_core_form_search_theme_form_alter(&$form, &$form_state) {
  * Custom submit handler for the search box
  */
 function commons_core_search_submit($form, &$form_state) {
-  // Copied from search_box_form_submit().
+  $query = array();
+  // Identify our search terms.
+  $form_id = $form['form_id']['#value'];
+  $terms = trim($form_state['values'][$form_id]);
+
+  // Redirect to the appropriate search path and query string.
+
+  // User profiles are not indexed by ApacheSolr out-of-the-box.
+  if ($form_state['values']['refine'] == 'users') {
+    $form_state['redirect'] = 'search/user/' . $terms;
+    return;
+  }
+
+  // Are we searching with ApacheSolr and the group filter?
+  if (isset($form_state['redirect']) && strpos($form_state['redirect'], 'search/apachesolr_search') !== FALSE && $form_state['values']['refine'] == 'group' && $form_state['values']['apachesolr_og']) {
+    // If so, add the group query string to the existing ApacheSolr search path.
+    $query['filters'] = _apachesolr_og_gid_key() . ':' . $form_state['group']->nid;
+    $form_state['redirect'] = array($form_state['redirect'], $query);
+    return;
+  }
+
+  // Are we doing a site-wide ApacheSolr search? If so, ApacheSolr has already
+  // set the proper $form_state['redirect'] for us.
+  if ($form_state['values']['apachesolr'] && $form_state['values']['refine'] == 'site') {
+    return;
+  }
+
+  // We're not using ApacheSolr nor searching on users. That leaves
+  // site-wide and group-specific searches powered by Drupal core.
+
   if (isset($_REQUEST['destination'])) {
     unset($_REQUEST['destination']);
   }
@@ -548,38 +572,19 @@ function commons_core_search_submit($form, &$form_state) {
     unset($_REQUEST['edit']['destination']);
   }
 
-  $form_id = $form['form_id']['#value'];
-  $terms = trim($form_state['values'][$form_id]);
+
   $query = array();
   
-  // Build a path and query based on the input and options
-  switch ($form_state['values']['refine']) {
-    case 'type':
-      if ($form_state['solr']) {
-        $path = 'search/apachesolr_search/' . $terms;
-        $query['filters'] = 'group:' . $form_state['group']->nid . ' type:' . $form_state['node']->type;
-      }
-      break;
-    
-    case 'group':
-      if ($form_state['solr']) {
-        $path = 'search/apachesolr_search/' . $terms;
-        $query['filters'] = 'group:' . $form_state['group']->nid;
-      } 
-      else {
-        $path = 'og/search/' . $form_state['group']->nid;
-        $query['keys'] = str_replace(' ', '+', $terms);
-      }
-      break;
-    
-    case 'users':
-      $path = 'search/user/' . $terms;
-      break;
-
-    default:
-      $path = 'search/node/' . $terms;
-      break;
+  // We're doing a group search.
+  if ($form_state['values']['refine'] == 'group') {
+    $path = 'og/search/' . $form_state['group']->nid;
+    $query['keys'] = str_replace(' ', '+', $terms);
   }
-  
+
+  else {
+    // We're doing a site-wide core search.
+      $path = 'search/node/' . $terms;
+  }
+
   $form_state['redirect'] = array($path, $query);
 }

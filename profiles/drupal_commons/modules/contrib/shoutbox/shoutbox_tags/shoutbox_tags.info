@@ -5,9 +5,9 @@ package = Shoutbox
 dependencies[] = og
 dependencies[] = shoutbox
 
-; Information added by drupal.org packaging script on 2011-08-16
-version = "6.x-2.7"
+; Information added by drupal.org packaging script on 2012-02-17
+version = "6.x-2.8"
 core = "6.x"
 project = "shoutbox"
-datestamp = "1313476651"
+datestamp = "1329492339"
 

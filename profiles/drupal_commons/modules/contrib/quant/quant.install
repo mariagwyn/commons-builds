@@ -10,6 +10,7 @@ function quant_uninstall() {
     'quant_weight',
     'quant_visible',
     'quant_palette',
+    'quant_use_images',
   ) as $var) {
     variable_del($var);
   }

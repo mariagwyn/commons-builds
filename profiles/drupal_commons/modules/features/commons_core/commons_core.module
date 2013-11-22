@@ -245,15 +245,6 @@ function commons_core_theme() {
 **/
 function commons_core_strongarm_alter(&$items) {
   $commons_tags_vid = variable_get('commons_tags_vid', 1);
-  // If these variables are set but the Commons tags vid isn't 1,
-  // changing the value isn't sufficient: we need to 
-  // create a different variable for each one.
-  if (isset($items['tagging_inject_1']) && $commons_tags_vid != 1) {
-    $new_item = $items['tagging_inject_1'];
-    unset($items['tagging_inject_1']);
-    $new_item->name = 'tagging_inject_' . $commons_tags_vid;
-    $items['tagging_inject_' . $commons_tags_vid] = $new_item;
-  }
   if (isset($items['tagadelic_block_tags_1']) && $commons_tags_vid !=1) {
     $new_item = $items['tagadelic_block_tags_1'];
     unset($items['tagadelic_block_tags_1']);
@@ -389,24 +380,6 @@ function commons_core_field_access($op, $field, $account = NULL, $node = NULL) {
   }
 }
 
-/**
- * Implementation of hook_tagging_suggestions()
- */
-function commons_core_tagging_suggestions($vid, $node) {
-  $suggestions = array();
-  
-  // Check if there are suggestions stored
-  if ($tags = variable_get('commons_tag_suggestions', '')) {
-    $tags = array_reverse(explode(',', $tags));
-    foreach ($tags as $tag) {
-      $suggestions[] = array(
-        '#name' => trim($tag),
-      );
-    }
-  }
-
-  return $suggestions;
-}
 
 /**
  * Implementation of hook_user_relationships_remove_link_alter().
@@ -535,6 +508,28 @@ function commons_core_wysiwyg_editor_settings_alter(&$settings, $context) {
     $settings['width'] = '95%';
   }
 }
+
+/**
+ * Implementation of hook_mollom_form_list().
+ */
+function commons_core_mollom_form_list() {
+  // "Join & learn more" block form
+  $forms['commons_core_join_form'] = array(
+    'title' => t('Join & learn more form'),
+    'entity' => 'user',
+  );
+  return $forms;
+}
+
+/**
+ * Implementation of hook_mollom_form_info().
+ */
+function commons_core_mollom_form_info($form_id) {
+  switch ($form_id) {
+    case 'commons_core_join_form':
+      return user_mollom_form_info('user_register');
+  }
+}
  
 /**
  * Callback to optionally force a login
@@ -633,10 +628,8 @@ function commons_core_is_community_manager($user = NULL) {
  */
 function commons_core_set_breadcrumb($path) {
   $breadcrumb = array();
-  
   // Break the path into pieces
   $path = explode('/', $path);
-  
   switch ($path[0]) {
     case 'taxonomy':
       $breadcrumb[] = l(t('Tags'), 'tagadelic');
@@ -674,10 +667,12 @@ function commons_core_set_breadcrumb($path) {
     case 'node':
       if (isset($path[1]) && is_numeric($path[1])) {
         if ($node = menu_get_object('node')) {
-          // Make 'Community' the active menu item.
-          $item = menu_get_item();
-          $item['href'] = 'community';
-          menu_set_item(NULL, $item);
+          if (!empty($node->og_groups)) {
+            // Make 'Community' the active menu item.
+            $item = menu_get_item();
+            $item['href'] = 'community';
+            menu_set_item(NULL, $item);
+          }
           if (og_is_group_type($node->type)) {
             $breadcrumb[] = l(t('Groups'), 'groups');
           }
@@ -721,7 +716,6 @@ function commons_core_set_breadcrumb($path) {
   if (!empty($breadcrumb)) {
     // If so, add a frontpage link to the beginning
     array_unshift($breadcrumb, l(t('Home'), '<front>'));
-    
     // And set them
     drupal_set_breadcrumb($breadcrumb);
   }

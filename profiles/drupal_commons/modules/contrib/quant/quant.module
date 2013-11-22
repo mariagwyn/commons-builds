@@ -122,7 +122,7 @@ function quant_get_quants() {
  */
 function _quant_get_time_from_url() {
   // Get the option
-  if (isset($_GET['options'])) {
+  if (isset($_GET['option'])) {
     switch ($_GET['option']) {
       case 'custom':
         $from = strtotime($_GET['from']);
@@ -211,7 +211,7 @@ function quant_process(&$quant, $period) {
   quant_build_data($quant);
   // Generate the chart
   quant_generate_chart($quant);
-    
+
   return $quant->render ? $quant->render : FALSE;
 }
 

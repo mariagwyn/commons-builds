@@ -115,3 +115,9 @@ function _answers_field_question_locked_p() {
   );
   return $array;
 }
+
+function answers_update_6201() {
+  watchdog('answers', 'Enable answers theming');
+  drupal_rebuild_theme_registry();
+  return array();
+}

@@ -188,7 +188,7 @@ function _quant_quants() {
     $quant->id = 'facebook_status';
     $quant->label = t('Statuses shared');
     $quant->labelsum = TRUE;
-    $quant->table = '';
+    $quant->table = 'facebook_status';
     $quant->field = 'created';
     $quant->dataType = 'single';
     $quant->chartType = 'line';

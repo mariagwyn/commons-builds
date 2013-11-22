@@ -6,28 +6,103 @@
 function answers_menu_default_menu_links() {
   $menu_links = array();
 
-  // Exported menu link: navigation:node/add/answer
-  $menu_links['navigation:node/add/answer'] = array(
-    'menu_name' => 'navigation',
-    'link_path' => 'node/add/answer',
-    'router_path' => 'node/add/answer',
-    'link_title' => 'Answer',
+  // Exported menu link: menu-answers:node/add/question
+  $menu_links['menu-answers:node/add/question'] = array(
+    'menu_name' => 'menu-answers',
+    'link_path' => 'node/add/question',
+    'router_path' => 'node/add/question',
+    'link_title' => 'Ask a new question (without search)',
     'options' => array(
       'attributes' => array(
-        'title' => 'An answer provided to a member of the community to a question',
+        'title' => '',
       ),
     ),
-    'module' => 'system',
-    'hidden' => '-1',
+    'module' => 'menu',
+    'hidden' => '0',
     'external' => '0',
     'has_children' => '0',
     'expanded' => '0',
-    'weight' => '0',
-    'parent_path' => 'node/add',
+    'weight' => '-46',
+  );
+  // Exported menu link: menu-answers:questions/all
+  $menu_links['menu-answers:questions/all'] = array(
+    'menu_name' => 'menu-answers',
+    'link_path' => 'questions/all',
+    'router_path' => 'questions/all',
+    'link_title' => 'View all questions',
+    'options' => array(
+      'attributes' => array(
+        'title' => '',
+      ),
+    ),
+    'module' => 'menu',
+    'hidden' => '0',
+    'external' => '0',
+    'has_children' => '0',
+    'expanded' => '0',
+    'weight' => '-50',
+  );
+  // Exported menu link: menu-answers:questions/search
+  $menu_links['menu-answers:questions/search'] = array(
+    'menu_name' => 'menu-answers',
+    'link_path' => 'questions/search',
+    'router_path' => 'questions/search',
+    'link_title' => 'Search for a question',
+    'options' => array(
+      'attributes' => array(
+        'title' => '',
+      ),
+    ),
+    'module' => 'menu',
+    'hidden' => '0',
+    'external' => '0',
+    'has_children' => '0',
+    'expanded' => '0',
+    'weight' => '-48',
+  );
+  // Exported menu link: menu-answers:questions/start_ask
+  $menu_links['menu-answers:questions/start_ask'] = array(
+    'menu_name' => 'menu-answers',
+    'link_path' => 'questions/start_ask',
+    'router_path' => 'questions/start_ask',
+    'link_title' => 'Ask a new question (with search)',
+    'options' => array(
+      'attributes' => array(
+        'title' => '',
+      ),
+    ),
+    'module' => 'menu',
+    'hidden' => '0',
+    'external' => '0',
+    'has_children' => '0',
+    'expanded' => '0',
+    'weight' => '-47',
+  );
+  // Exported menu link: menu-answers:questions/unanswered
+  $menu_links['menu-answers:questions/unanswered'] = array(
+    'menu_name' => 'menu-answers',
+    'link_path' => 'questions/unanswered',
+    'router_path' => 'questions/unanswered',
+    'link_title' => 'View unanswered questions',
+    'options' => array(
+      'attributes' => array(
+        'title' => '',
+      ),
+    ),
+    'module' => 'menu',
+    'hidden' => '0',
+    'external' => '0',
+    'has_children' => '0',
+    'expanded' => '0',
+    'weight' => '-49',
   );
   // Translatables
   // Included for use with string extractors like potx.
-  t('Answer');
+  t('Ask a new question (with search)');
+  t('Ask a new question (without search)');
+  t('Search for a question');
+  t('View all questions');
+  t('View unanswered questions');
 
 
   return $menu_links;

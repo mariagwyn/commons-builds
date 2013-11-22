@@ -64,6 +64,7 @@ function userpoints_user_picture_user($op, &$edit, &$user, $category = NULL) {
 	 'entity_id'   => $user->uid,
 	 'entity_type' => 'user',
 	 'tid'         => variable_get(USERPOINTS_USER_PICTURE_TID, 0),
+	 'points'      => NULL,
 	);
 	
 	switch($op) {

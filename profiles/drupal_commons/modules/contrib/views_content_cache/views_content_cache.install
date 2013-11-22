@@ -102,6 +102,13 @@ function views_content_cache_install() {
 }
 
 /**
+ * Implementation of hook_uninstall().
+ */
+function views_content_cache_uninstall() {
+  drupal_uninstall_schema('views_content_cache');
+}
+
+/**
  * Update 6001: Create tables for schema version 6001.
  */
 function views_content_cache_update_6001() {
