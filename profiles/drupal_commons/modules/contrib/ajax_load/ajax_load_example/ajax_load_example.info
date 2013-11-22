@@ -6,9 +6,9 @@ dependencies[] = ajax_load
 core = 6.x
 
 
-; Information added by drush on 2013-01-18
+; Information added by drush on 2013-06-04
 version = "6.x-1.3+5-dev"
 core = "6.x"
 project = "ajax_load"
-datestamp = "1358473557"
+datestamp = "1370297156"
 

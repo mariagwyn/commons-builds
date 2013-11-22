@@ -5,10 +5,9 @@ dependencies[] = mimemail
 package = Activity Log
 core = 6.x
 
-
-; Information added by drush on 2013-01-18
-version = "6.x-1.0+1-dev"
+; Information added by drupal.org packaging script on 2011-11-25
+version = "6.x-1.0"
 core = "6.x"
 project = "digests"
-datestamp = "1358473505"
+datestamp = "1322259037"
 

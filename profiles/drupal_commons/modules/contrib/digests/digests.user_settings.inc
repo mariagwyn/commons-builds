@@ -42,7 +42,7 @@ function _digests_user_form($uid) {
   $form['digests']['digests_interval'] = array(
     '#type' => 'select',
     '#title' => t('Receive digests of interesting activity'),
-    '#default_value' => !is_numeric($interval) ? 86400 : $interval,
+    '#default_value' => empty($interval) ? 86400 : $interval,
     '#options' => array(
       86400 => t('Daily'),
       604800 => t('Weekly'),

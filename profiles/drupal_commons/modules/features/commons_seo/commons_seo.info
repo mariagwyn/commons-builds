@@ -21,9 +21,9 @@ features[variable][] = "pathauto_taxonomy_2_pattern"
 features[variable][] = "pathauto_tracker_pattern"
 features[variable][] = "pathauto_user_pattern"
 
-; Information added by drupal.org packaging script on 2013-01-18
-version = "6.x-2.12"
+; Information added by drupal.org packaging script on 2013-06-03
+version = "6.x-2.13"
 core = "6.x"
 project = "commons"
-datestamp = "1358467270"
+datestamp = "1370293704"
 

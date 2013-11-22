@@ -4,9 +4,9 @@ package = User interface
 core = 6.x
 
 
-; Information added by drush on 2013-01-18
+; Information added by drush on 2013-06-04
 version = "6.x-2.3+9-dev"
 core = "6.x"
 project = "wysiwyg"
-datestamp = "1358473511"
+datestamp = "1370297134"
 

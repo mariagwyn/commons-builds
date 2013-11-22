@@ -253,7 +253,7 @@ function user_relationship_defaults_user_relationships_page_alter($page_id, &$pa
     foreach ($defaults as $default) {
       $default_rows[] = array(
         theme('username', $default->user),
-        $default->relationship_type->name,
+        check_plain($default->relationship_type->name),
         l(t('delete'), "admin/user/relationships/defaults/{$default->rdid}/delete"),
       );
     }

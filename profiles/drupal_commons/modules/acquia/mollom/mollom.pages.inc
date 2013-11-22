@@ -23,6 +23,17 @@
  * @todo Add error handling.
  */
 function mollom_captcha_js($type, $mollom_build_id, $contentId = NULL) {
+  // Deny GET requests to make automated security audit tools not complain
+  // about a JSON Hijacking possibility.
+  // @see http://capec.mitre.org/data/definitions/111.html
+  // @see http://haacked.com/archive/2009/06/24/json-hijacking.aspx
+  if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    header($_SERVER['SERVER_PROTOCOL'] . ' 405 Method Not Allowed');
+    // A HTTP 405 response MUST specify allowed methods.
+    header('Allow: POST');
+    exit();
+  }
+
   // Load $form_state from cache or create a dummy state.
   if ($cache = cache_get($mollom_build_id, 'cache_mollom')) {
     $form_state['mollom'] = $cache->data;
@@ -30,7 +41,7 @@ function mollom_captcha_js($type, $mollom_build_id, $contentId = NULL) {
   else {
     $form_state['mollom'] = array();
     if (isset($contentId)) {
-      $form_state['mollom']['response']['content']['id'] = $contentId;
+      $form_state['values']['mollom']['contentId'] = $contentId;
     }
   }
   $form_state['mollom']['captcha_type'] = $type;
@@ -39,12 +50,12 @@ function mollom_captcha_js($type, $mollom_build_id, $contentId = NULL) {
   if (!empty($form_state['mollom']['response']['captcha']['id'])) {
     // Update cached session id in the cached $form_state.
     if ($cache) {
-      cache_set($mollom_build_id, $form_state['mollom'], 'cache_mollom', time() + 21600);
+      cache_set($mollom_build_id, $form_state['mollom'], 'cache_mollom', $cache->expire);
     }
     // Return new content and CAPTCHA ID via JSON.
     $data = array(
-      'content' => $captcha,
       'captchaId' => $form_state['mollom']['response']['captcha']['id'],
+      'content' => $captcha,
     );
     drupal_json($data);
   }

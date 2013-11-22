@@ -15,7 +15,7 @@ if ($relationships) {
     }
     $row = array(
       theme('username', $this_user),
-      ur_tt("user_relationships:rtid:$relationship->rtid:name", $relationship->name) . ($relationship->is_oneway ? ($this_user_str == 'requestee' ? t(' (You to Them)') : t(' (Them to You)')) : NULL),
+      check_plain(ur_tt("user_relationships:rtid:$relationship->rtid:name", $relationship->name)) . ($relationship->is_oneway ? ($this_user_str == 'requestee' ? t(' (You to Them)') : t(' (Them to You)')) : NULL),
       $extra,
       $edit_access ? theme('user_relationships_remove_link', $account->uid, $relationship->rid) : '&nbsp;',
     );

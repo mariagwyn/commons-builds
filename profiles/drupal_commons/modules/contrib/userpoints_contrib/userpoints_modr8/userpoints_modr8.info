@@ -6,9 +6,9 @@ core = 6.x
 dependencies[] = userpoints
 
 
-; Information added by drush on 2013-01-18
+; Information added by drush on 2013-06-04
 version = "6.x-1.0-beta1+3-dev"
 core = "6.x"
 project = "userpoints_contrib"
-datestamp = "1358473524"
+datestamp = "1370297124"
 

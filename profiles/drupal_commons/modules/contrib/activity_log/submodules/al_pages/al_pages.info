@@ -4,10 +4,9 @@ dependencies[] = activity_log
 package = Activity Log
 core = 6.x
 
-
-; Information added by drush on 2013-01-18
-version = "6.x-2.0-beta1+62-dev"
+; Information added by drupal.org packaging script on 2013-02-24
+version = "6.x-2.0-beta2"
 core = "6.x"
 project = "activity_log"
-datestamp = "1358473516"
+datestamp = "1361734002"
 
