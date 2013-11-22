@@ -54,9 +54,9 @@ function fbsmp_schema() {
       ),
       'status' => array(
         'description' => 'The conversion status of the video file.',
-        'type' => 'text',
+        'type' => 'int',
         'not null' => TRUE,
-        'serialize' => TRUE,
+        'unsigned' => TRUE,
       ),
       'cid' => array(
         'description' => 'The fid of the converted file.',
@@ -121,53 +121,19 @@ function fbsmp_disable() {
 /**
  * Implementation of hook_update_N().
  */
-function fbsmp_update_6100() {
-  $schema['fbsmp_videos'] = array(
-    'description' => 'Provides a place to record video conversion status for video plugin.',
-    'fields' => array(
-      'fid' => array(
-        'description' => 'Foreign key to the {files} table.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-      ),
-      'sid' => array(
-        'description' => 'Foreign key to the {facebook_status} table.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-      ),
-      'status' => array(
-        'description' => 'The conversion status of the video file.',
-        'type' => 'text',
-        'not null' => TRUE,
-        'serialize' => TRUE,
-      ),
-      'cid' => array(
-        'description' => 'The fid of the converted file.',
-        'type' => 'int',
-        'not null' => TRUE,
-        'unsigned' => TRUE,
-      ),
-    ),
-    'primary key' => array('fid'),
-  );
+function fbsmp_update_6201() {
   $ret = array();
-  db_create_table($ret, 'fbsmp_videos', $schema['fbsmp_videos']);
-  return $ret;
-}
+  $statuses = db_query("SELECT sid, status FROM {fbsmp_videos}");
 
-/**
- * Implementation of hook_update_N().
- */
-function fbsmp_update_6101() {
-  $ret = array();
+  while ($result = db_fetch_object($statuses)) {
+    db_query("UPDATE {fbsmp_videos} SET status = %d where sid = %d", unserialize($result->status), $result->sid);
+  }
+
   $field_data = array(
-    'type' => 'text',
+    'type' => 'int',
     'not null' => TRUE,
-    'serialize' => TRUE,
-    'size' => 'medium',
+    'unsigned' => TRUE,
   );
-  db_change_field($ret, 'fbsmp', 'data', 'data', $field_data);
+  db_change_field($ret, 'fbsmp_videos', 'status', 'status', $field_data);
   return $ret;
 }

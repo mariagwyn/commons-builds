@@ -17,7 +17,7 @@ Drupal.behaviors.fbsmpLink = function (context) {
       $(context).find('#edit-fbsmp-link-attach').trigger(Drupal.settings.ahah[id].event);
     }
   });
-  
+
   //Inline editing of the title and description field.
   $('.fbsmp-link-title-field:not(.fbsmp-link-title-field-processed)').addClass('fbsmp-link-title-field-processed').each(function() {    
     $(this).after("<span class=\"fbsmp-link-title-text-editable\">" + encode($(this).val()) + "</span>");

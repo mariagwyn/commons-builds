@@ -860,9 +860,12 @@ function fbsmp_video_fbsmp_token_values($attachment) {
   if (!empty($file['url'])) {
     $video_url = $file['url'];
   }
-  if (is_file($attachment_data['current_thumbnail'])) {
-    $thumbnail_url = file_create_url($attachment_data['current_thumbnail']);
+  
+  $thumbnail_file = (array)_fbsmp_file_load($attachment_data['current_thumbnail']);
+  if (is_file($thumbnail_file['filepath'])) {
+    $thumbnail_url = file_create_url($thumbnail_file['filepath']);
   }
+  
   return array(
     'video-id' => $attachment_data['fid'],
     'video-url' => $video_url,

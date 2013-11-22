@@ -190,7 +190,7 @@ function facebook_status_box(&$form_state, $recipient, $type = 'user') {
   if (variable_get('facebook_status_length', 140) > 0) {
     $form['chars'] = array(
       '#value' => '<span class="facebook-status-chars">'. t('%chars characters allowed', array('%chars' => variable_get('facebook_status_length', 140))) .'</span>',
-      '#weight' => module_exists('fbss_privacy') ? -41 : -24,
+      '#weight' => -41,
     );
   }
   $form['fbss-status'] = array(
@@ -291,34 +291,41 @@ function facebook_status_box_submit($form, &$form_state) {
 
 /**
  * Adds the Autogrow jQuery extension.
+ *
+ * @return
+ *   TRUE if the plugin was added; FALSE if it wasn't found.
  */
 function _facebook_status_use_autogrow() {
   $path = cache_get('fbss:autogrow');
   if (!empty($path)) {
     drupal_add_js($path->data);
-    return;
+    return TRUE;
   }
   if (module_exists('libraries')) {
     $path = libraries_get_path('autogrow') .'/jquery.autogrow.js';
     if (file_exists($path)) {
       drupal_add_js($path);
       cache_set('fbss:autogrow', $path);
-      return;
+      return TRUE;
     }
   }
   if (file_exists('sites/all/libraries/jquery.autogrow.js')) {
     drupal_add_js('sites/all/libraries/jquery.autogrow.js');
     cache_set('fbss:autogrow', 'sites/all/libraries/jquery.autogrow.js');
+    return TRUE;
   }
   elseif (file_exists('libraries/jquery.autogrow.js')) {
     drupal_add_js('libraries/jquery.autogrow.js');
     cache_set('fbss:autogrow', 'libraries/jquery.autogrow.js');
+    return TRUE;
   }
   else {
     $path = drupal_get_path('profile', $GLOBALS['profile']) .'/libraries/jquery.autogrow.js';
     if (file_exists($path)) {
       drupal_add_js($path);
       cache_set('fbss:autogrow', $path);
+      return TRUE;
     }
   }
+  return FALSE;
 }

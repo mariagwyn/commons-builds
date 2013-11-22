@@ -1,5 +1,4 @@
 <?php
-// $Id: constraint_complexity.inc,v 1.3 2009/06/04 21:48:39 deekayen Exp $
 /**
  * @file
  * Password policy constraint callbacks.

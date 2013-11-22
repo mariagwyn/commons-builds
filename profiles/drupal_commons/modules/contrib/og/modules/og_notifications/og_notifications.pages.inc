@@ -1,5 +1,4 @@
 <?php
-// $Id: og_notifications.pages.inc,v 1.1.2.2 2010/02/07 13:36:25 amitaibu Exp $
 
 /**
  * @file
@@ -46,9 +45,11 @@ function og_notifications_user_page($account = NULL) {
  *   Form array.
  */
 function og_notifications_add_form($form_state, $account, $groups) {
-  // All available group post types that can be subscribed to
-  $node_types = og_notifications_node_types();
-
+  $content_types = array_filter(variable_get('og_notifications_content_types', array()));
+  $content_names = node_get_types('names');
+  foreach ($content_types as $type) {
+    $content_types[$type] = $content_names[$type];
+  }
   $defaults = _notifications_subscription_defaults($account);
   $send_methods = _notifications_send_methods();
   $send_intervals = _notifications_send_intervals();
@@ -65,12 +66,11 @@ function og_notifications_add_form($form_state, $account, $groups) {
   $form['subscription']['group'][0] = array(
     '#type' => 'select',
     '#options' => $groups,
-    '#default_value' => (isset($_GET['gid']) && is_numeric($_GET['gid'])) ? $_GET['gid'] : '',
     '#title' => t('Group'),
   );
   $form['subscription']['node_type'][0] = array(
     '#type' => 'select',
-    '#options' => array('all' => t('All content types')) + $node_types,
+    '#options' => array('all' => t('All content types')) + $content_types,
     '#title' => t('Notify me of new content of these types'),
   );
   // Hide send methods if only one available.
@@ -118,7 +118,8 @@ function og_notifications_add_form_submit($form, &$form_state) {
   // a varchar.
   $subscription->fields = array('group' => (string) $form_values['subscription']['group'][0], 'type' => $form_values['subscription']['node_type'][0]);
   if ($form_values['subscription']['node_type'][0] == 'all') {
-    foreach (og_notifications_node_types() as $type => $name) {
+    $types = array_filter(variable_get('og_notifications_content_types', array()));
+    foreach ($types as $type) {
       $subscription->fields['type'] = $type;
       notifications_save_subscription($subscription);
       unset($subscription->sid);

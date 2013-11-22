@@ -471,6 +471,41 @@ function fbsmp_photo_fbsmp_delete($status) {
 }
 
 /**
+ * Break out for fbsmp_file_download().
+ */
+function fbsmp_photo_file_download($file) {
+  $file = file_create_path($file);
+  
+  $result = db_query("SELECT * FROM {files} WHERE filepath = '%s'", $file);
+  if (!$file = db_fetch_object($result)) {
+    // We don't really care about this file.
+    return;
+  }
+  
+  $records = fbsmp_get_attachments('photo');
+  foreach ($records as $record) {
+    if ($record['data']['fid'] == $file->fid) {
+      // Check if current user has access to this status.
+      if (fbsmp_status_can_view(facebook_status_load($record['sid']))) {
+        // Access is granted.
+        $name = mime_header_encode($file->filename);
+        $type = mime_header_encode($file->filemime);
+        $disposition = 'inline';
+        
+        return array(
+          'Content-Type: ' . $type . '; name='. $name,
+          'Content-Length: ' . $file->filesize,
+          'Content-Disposition: ' . $disposition . '; filename="' . $name . '"',
+          'Cache-Control: private',
+        );
+      }
+      
+      return -1;
+    } 
+  }
+}
+
+/**
  * Get the upload validators for a photo upload field.
  *
  * @param $settings

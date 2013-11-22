@@ -1,5 +1,4 @@
 <?php
-// $Id: password_policy_password_tab.pages.inc,v 1.3 2009/08/27 11:05:20 miglius Exp $
 
 /**
  * @file
@@ -44,9 +43,9 @@ function password_policy_password_tab_submit($form, &$form_state) {
   user_module_invoke('submit', $form_state['values'], $account, 'account');
   user_save($account, array('pass' => $form_state['values']['pass']));
   drupal_set_message(t('Password has been changed.'));
-  if (PASSWORD_POLICY_PASSWORD_TAB_REDIRECT && !preg_match('/[?&]destination=/', $form['#action'])) {
+  if (variable_get('password_policy_password_tab_redirect', '') && !preg_match('/[?&]destination=/', $form['#action'])) {
     global $user;
-    $redirect = parse_url(urldecode(strtr(PASSWORD_POLICY_PASSWORD_TAB_REDIRECT, array('%uid' => $user->uid))));
+    $redirect = parse_url(urldecode(strtr(variable_get('password_policy_password_tab_redirect', ''), array('%uid' => $user->uid))));
     $form_state['redirect'] = array($redirect['path'], isset($redirect['query']) ? $redirect['query'] : NULL, isset($redirect['fragment']) ? $redirect['fragment'] : NULL);
   }
 }

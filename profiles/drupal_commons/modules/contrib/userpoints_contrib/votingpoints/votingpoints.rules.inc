@@ -1,5 +1,5 @@
 <?php
-// $Id: votingpoints.rules.inc,v 1.1 2009/01/29 17:36:04 kbahey Exp $
+// $Id$
 
 /**
  * @file

@@ -1,5 +1,5 @@
 <?php
-// $Id: userpoints_reset.module,v 1.4 2008/11/13 15:08:35 kbahey Exp $
+// $Id$
 
 define(USERPOINTS_PERM_RESET, 'reset userpoints');
 

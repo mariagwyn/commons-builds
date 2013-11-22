@@ -1,5 +1,10 @@
 Drupal.behaviors.fbss_comments = function (context) {
   var ctxt = $(context);
+  if ($.fn.autogrow) {
+    // jQuery Autogrow plugin integration.
+    ctxt.find('.fbss-comments-textarea').autogrow({expandTolerance: 2});
+    ctxt.find('.fbss-comments-textarea').css('resize', 'none');
+  }
   // Mark the comments wrapper with no-comments class if no comments exist for this entry
   ctxt.find('.facebook-status-comments').each(function (index, item) {
     var $this = $(this);
@@ -43,6 +48,11 @@ Drupal.behaviors.fbss_comments = function (context) {
   ctxt.find('.fbss-comments-comment-form').bind('ahah_success', function() {
     $(this).find('.fbss-comments-submit').attr('disabled', true);
   });
+  // Hide the save button until the comment textarea is clicked.
+  ctxt.find('.fbss-comments-submit').hide();
+  ctxt.find('.fbss-comments-textarea').focus(function() {
+    $(this).parents('form').find('.fbss-comments-submit').show();
+  });
   // Enable the save button if there is text in the textarea.
   ctxt.find('.fbss-comments-textarea').keypress(function(key) {
     var th = $(this);
@@ -60,18 +70,14 @@ Drupal.behaviors.fbss_comments = function (context) {
     ctxt.find('.fbss-comments-edit-delete a').click(function(event) {
       event.preventDefault();
       var sid = $(this).parents('form').attr('id').split('-').pop();
-      var th = $(this);
+      var th = $(this), p = th.parents('.fbss-comments').parent();
       var handle = function() {
-        $.get('index.php?q=fbss_comments/js/modalframe/'+ sid, function(data) {
-          th.parents('.fbss-comments').replaceWith($(data));
-          Drupal.attachBehaviors($(data));
+        $.get('index.php?q=fbss_comments/js/modalframe/'+ sid +'&source='+ window.location.href, function(data) {
+          th.parents('.fbss-comments').replaceWith(data);
+          Drupal.attachBehaviors(p.find('.fbss-comments'));
         });
       };
       Drupal.modalFrame.open({url: $(this).attr('href'), onSubmit: handle});
     });
-  }
-  if ($.fn.autogrow) {
-    // jQuery Autogrow plugin integration.
-    $('.fbss-comments-textarea').autogrow({expandTolerance: 2});
   }
 }

@@ -35,24 +35,15 @@ function fbss_privacy_form_facebook_status_box_alter(&$form, &$form_state) {
     return;
   }
   drupal_add_css(drupal_get_path('module', 'fbss_privacy') .'/fbss_privacy.css');
+  // This value gets saved in facebook_status_save_status() so we don't need a separate submit handler.
   $form['private'] = array(
     '#type' => 'checkbox',
     '#title' => t('Private'),
-    '#default_value' => 0,
-    '#weight' => -24,
+    '#default_value' => empty($_GET['private-status']) ? 0 : $_GET['private-status'],
+    '#weight' => -15,
     '#prefix' => '<div class="facebook-status-private-box">',
     '#suffix' => '</div>',
   );
-  $form['fbss-submit']['#submit'][] = 'fbss_privacy_facebook_status_box_submit';
-}
-
-/**
- * Submit callback for the Privacy checkbox.
- */
-function fbss_privacy_facebook_status_box_submit($form, $form_state) {
-  if (!empty($form_state['values']['private']) && user_access('send private status messages')) {
-    db_query("UPDATE {facebook_status} SET private = %d WHERE sid = %d", $form_state['values']['private'], $form_state['facebook_status']['sid']);
-  }
 }
 
 /**
@@ -83,6 +74,18 @@ function fbss_privacy_preprocess_facebook_status_item(&$vars) {
   $vars['private'] = (bool) $vars['status']->private;
   $vars['private_text'] = $vars['private'] ? t('(Private)') : t('Public');
   drupal_add_css(drupal_get_path('module', 'fbss_privacy') .'/fbss_privacy.css');
+}
+
+/**
+ * Implementation of hook_facebook_status_link_alter().
+ */
+function fbss_privacy_facebook_status_link_alter(&$links, $status) {
+  if (isset($links['respond']) && !empty($status->private)) {
+    if (!isset($links['respond']['query'])) {
+      $links['respond']['query'] = array();
+    }
+    $links['respond']['query']['private-status'] = 1;
+  }
 }
 
 //=============
@@ -158,8 +161,8 @@ function fbss_privacy_views_default_views_alter(&$views) {
       $view->display['default']->display_options['fields']['nothing'] = $nothing;
       // Add the Private token to the Global: Nothing field.
       $t = $view->display['default']->display_options['fields']['nothing']['alter']['text'];
-      $t = str_replace('[name] [message]', '[name] [private] [message]', $t); // context-based Views
-      $t = str_replace('[user_contextual_pic] [message]', '[user_contextual_pic] [private] [message]', $t); // all context Views
+      $t = str_replace('[name]', '[name] [private]', $t); // context-based Views
+      $t = str_replace('[user_contextual]', '[user_contextual] [private]', $t); // context-agnostic Views
       $view->display['default']->display_options['fields']['nothing']['alter']['text'] = $t;
     }
   }

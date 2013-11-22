@@ -21,3 +21,10 @@ features[variable][] = "shoutbox_filter_format"
 features[variable][] = "shoutbox_showamount_block"
 name = "Commons Shoutbox"
 package = "Commons"
+
+; Information added by drupal.org packaging script on 2012-01-18
+version = "6.x-2.4"
+core = "6.x"
+project = "commons"
+datestamp = "1326924940"
+

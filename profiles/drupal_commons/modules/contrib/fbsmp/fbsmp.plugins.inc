@@ -37,6 +37,7 @@ function _fbsmp_fbsmp_plugins() {
     'url_param_form' => 'fbsmp_link_fbsmp_url_param_form',
     'url_param_form_validate' => 'fbsmp_link_fbsmp_widget_form_validate',
     'url_param_form_submit' => 'fbsmp_link_fbsmp_widget_form_save',
+    'exported theme variables' => 'fbsmp_link_fbsmp_token_values',
   );
   $info['photo'] = array(
     'name' => t('Photo'),
@@ -57,6 +58,8 @@ function _fbsmp_fbsmp_plugins() {
     'repost_form' => 'fbsmp_photo_fbsmp_repost_form',
     'repost_form_validate' => 'fbsmp_photo_fbsmp_repost_form_validate',
     'repost_form_submit' => 'fbsmp_photo_fbsmp_repost_form_save',
+    'exported theme variables' => 'fbsmp_photo_fbsmp_token_values',
+    'file download' => 'fbsmp_photo_file_download',
   );
   $info['video'] = array(
     'name' => t('Video'),
@@ -74,6 +77,7 @@ function _fbsmp_fbsmp_plugins() {
     'widget_form_save' => 'fbsmp_video_fbsmp_widget_form_save',
     'token list' => 'fbsmp_video_fbsmp_token_list',
     'token values' => 'fbsmp_video_fbsmp_token_values',
+    'exported theme variables' => 'fbsmp_video_fbsmp_token_values',
   );
   $info['slideshare'] = array(
     'name' => t('Document'),
@@ -91,6 +95,7 @@ function _fbsmp_fbsmp_plugins() {
     'widget_form_save' => 'fbsmp_slideshare_fbsmp_widget_form_save',
     'token list' => 'fbsmp_slideshare_fbsmp_token_list',
     'token values' => 'fbsmp_slideshare_fbsmp_token_values',
+    'exported theme variables' => 'fbsmp_slideshare_fbsmp_token_values',
   );
   return $info;
 }

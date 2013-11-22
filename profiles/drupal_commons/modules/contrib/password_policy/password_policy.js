@@ -1,4 +1,3 @@
-// $Id: password_policy.js,v 1.2 2008/02/10 16:35:40 miglius Exp $
 
 /**
  * Attach handlers to evaluate the strength of any password fields and to check

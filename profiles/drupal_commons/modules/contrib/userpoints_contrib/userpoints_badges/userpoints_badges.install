@@ -1,6 +1,6 @@
 <?php
 
-// $Id: userpoints_badges.install,v 1.1 2008/11/10 18:13:22 kbahey Exp $
+// $Id$
 
 function userpoints_badges_schema() {
   $schema = array();

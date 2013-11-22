@@ -266,7 +266,12 @@ function fbss_rules_delete_action($settings) {
  * Builds the form for adding a status.
  */
 function fbss_rules_add_action_form($settings, &$form) {
-  $settings += array('sender' => '', 'recipient' => '', 'type' => '', 'message' => '');
+  $settings += array(
+    'sender' => '',
+    'recipient' => '',
+    'type' => 'user',
+    'message' => '',
+  );
   $form['settings']['sender'] = array(
     '#type' => 'textfield',
     '#title' => t('Sender username'),
@@ -277,28 +282,29 @@ function fbss_rules_add_action_form($settings, &$form) {
   $form['settings']['recipient'] = array(
     '#type' => 'textfield',
     '#title' => t('Recipient ID'),
+    '#description' => t('The ID of the recipient.'),
     '#default_value' => $settings['recipient'],
+    '#required' => TRUE,
   );
+  $types = facebook_status_all_contexts();
+  $options = array();
+  foreach ($types as $type => $info) {
+    $options[$type] = $info['title'];
+  }
   $form['settings']['type'] = array(
-    '#type' => 'textfield',
+    '#type' => 'select',
     '#title' => t('Recipient type'),
     '#default_value' => $settings['type'],
+    '#required' => TRUE,
+    '#options' => $options,
   );
   $form['settings']['message'] = array(
     '#type' => 'textarea',
     '#title' => t('Status message'),
     '#default_value' => $settings['message'],
     '#rows' => 3,
+    '#required' => TRUE,
   );
-}
-
-/**
- * Validates the form for adding a status.
- */
-function fbss_rules_add_action_validate($form, $form_state) {
-  if (!$form_state['values']['settings']['recipient'] || !$form_state['values']['settings']['type']) {
-    form_set_error('settings][recipient', t('You must enter an object ID and its type.'));
-  }
 }
 
 /**
@@ -309,7 +315,8 @@ function fbss_rules_add_action($settings) {
   $context = facebook_status_determine_context($type);
   $recipient = $context['handler']->load_recipient($settings['recipient']);
   $message = $settings['message'];
-  $sender = _facebook_status_user_load_by_name($settings['sender']);
+  $sender_name = empty($settings['sender']) ? $GLOBALS['user']->name : $settings['sender'];
+  $sender = _facebook_status_user_load_by_name($sender_name);
   facebook_status_save_status($recipient, $type, $message, $sender);
 }
 

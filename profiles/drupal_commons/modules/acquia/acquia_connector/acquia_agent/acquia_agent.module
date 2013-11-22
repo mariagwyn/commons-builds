@@ -1,5 +1,4 @@
 <?php
-// $Id: acquia_agent.module,v 1.17.2.6 2010/09/15 21:39:18 pwolanin Exp $
 
 /**
  * @file
@@ -19,6 +18,7 @@ define('SUBSCRIPTION_MESSAGE_EXPIRED' , 1600);
 define('SUBSCRIPTION_MESSAGE_INVALID' , 1700);
 define('SUBSCRIPTION_VALIDATION_ERROR', 1800);
 define('SUBSCRIPTION_PROVISION_ERROR' , 9000);
+/*ss*/
 
 /**
  * Subscription message lifetime defined by the Acquia Network.
@@ -50,10 +50,8 @@ function acquia_agent_menu() {
  */
 function acquia_agent_init() {
   if (arg(2) != 'acquia-agent' && empty($_POST) && user_access('administer site configuration') && (!acquia_agent_has_credentials())) {
-    $message = t('Get a <a href="@acquia-free">free 30 day trial</a> of Drupal support, enhanced content search, comment spam blocking and more. If you have an Acquia Network subscription, <a href="@settings">connect now</a>.', array('@acquia-free' => url('admin/settings/acquia-agent'), '@settings' => url('admin/settings/acquia-agent/connection')));
-    if (arg(0) == 'admin') {
-      $message .= '<br />'. t('To turn this message off, disable the Acquia Network Connector <a href="@admin-modules">modules</a>.', array('@admin-modules' => url('admin/build/modules', array('fragment' => 'system-modules'))));
-    }
+    $text = 'Get a <a href="!acquia-free">free 30-day trial</a> of the Acquia Network which includes a <a href="!library" target="_blank">library</a> of expert knowledge, <a href="!services" target="_blank">tools and services</a> to make your site awesome, and <a href="!support" target="_blank">Drupal support</a> when you need it.<br/>If you have an Acquia Network subscription, <a href="!settings">connect now</a>. Otherwise, you can turn this message off by disabling the Acquia Network <a href="!admin-modules">modules</a>.';
+    $message = t($text, array('!acquia-free' => url('admin/settings/acquia-agent'), '!library' => url('http://library.acquia.com'), '!settings' => url('admin/settings/acquia-agent/connection'), '!support' => url('http://www.acquia.com/drupal-support'), '!services' => url('http://www.acquia.com/products-services/acquia-network/cloud-services'), '!admin-modules' => url('admin/build/modules', array('fragment' => 'edit-modules-acquia-network-connector'))));
     drupal_set_message($message, 'warning', FALSE);
   }
 }
@@ -121,11 +119,12 @@ function acquia_agent_check_subscription($params = array()) {
     }
   }
   return $subscription;
-}
+} 
 
 function acquia_agent_report_xmlrpc_error() {
   drupal_set_message(t('Error: @message (@errno)', array('@message' => xmlrpc_error_msg(), '@errno' => xmlrpc_errno())), 'error');
 }
+
 /**
  * Implementation of hook_update_status_alter().
  *
@@ -225,9 +224,6 @@ function acquia_agent_menu_alter(&$items) {
  */
 function acquia_agent_refresh_status() {
   // Refresh subscription information, so we are sure about our update status.
-  if (module_exists('acquia_spi')) {
-    acquia_spi_send_profile_info();
-  }
   // We send a heartbeat here so that all of our status information gets
   // updated locally via the return data.
   acquia_agent_check_subscription();
@@ -240,9 +236,6 @@ function acquia_agent_refresh_status() {
  */
 function acquia_agent_manual_status() {
   // Refresh subscription information, so we are sure about our update status.
-  if (module_exists('acquia_spi')) {
-    acquia_spi_send_profile_info();
-  }
   // We send a heartbeat here so that all of our status information gets
   // updated locally via the return data.
   acquia_agent_check_subscription();
@@ -283,7 +276,7 @@ function acquia_agent_watchdog($log_entry) {
 /**
  * Implementation of hook_admin_menu().
  */
- function acquia_agent_admin_menu() {
+function acquia_agent_admin_menu() {
   // Add link to show current subscription status
   $links[] = array(
     'title' => 'acquia_subscription_status',
@@ -371,15 +364,21 @@ function acquia_agent_call($method, $params, $identifier = NULL, $key = NULL, $a
   require_once $path .'/acquia_agent_streams.inc';
 
   $acquia_network_address = acquia_agent_network_address($acquia_network_address);
-  $host = isset($_SERVER["SERVER_ADDR"]) ? $_SERVER["SERVER_ADDR"] : '';
+  $ip = isset($_SERVER["SERVER_ADDR"]) ? $_SERVER["SERVER_ADDR"] : '';
+  $host = isset($_SERVER["HTTP_HOST"]) ? $_SERVER["HTTP_HOST"] : '';
+  $ssl = isset($_SERVER["HTTPS"]) ? TRUE : FALSE;
   $data = array(
     'authenticator' => _acquia_agent_authenticator($params, $identifier, $key),
+    'ip' => $ip,
     'host' => $host,
+    'ssl' => $ssl,
     'body' => $params,
   );
   $data['result'] = _acquia_agent_request($acquia_network_address, $method, $data);
   return $data;
 }
+
+/* change */
 
 /**
  * Returns an error message for the most recent (failed) attempt to connect
@@ -425,16 +424,18 @@ function acquia_agent_network_address($acquia_network_address = NULL) {
   }
   // Strip protocol (scheme) from Network address
   $uri = parse_url($acquia_network_address);
-  $port = isset($uri['port']) ? ':'. $uri['port'] : '';
-  $path = isset($uri['path']) ? $uri['path'] : '';
-  $acquia_network_address = $uri['host'] . $port . $path;
+  if (isset($uri['host'])) {
+    $acquia_network_address = $uri['host'];
+  }
+  $acquia_network_address .= isset($uri['port']) ? ':' . $uri['port'] : '';
+  $acquia_network_address .= (isset($uri['path']) && isset($uri['host'])) ? $uri['path'] : '';
   // Add a scheme based on PHP's capacity.
   if (in_array('ssl', stream_get_transports(), TRUE) && !defined('ACQUIA_DEVELOPMENT_NOSSL')) {
     // OpenSSL is available in PHP
-    $acquia_network_address = 'https://'. $acquia_network_address;
+    $acquia_network_address = 'https://' . $acquia_network_address;
   }
   else {
-    $acquia_network_address = 'http://'. $acquia_network_address;
+    $acquia_network_address = 'http://' . $acquia_network_address;
   }
   $acquia_network_address .= '/xmlrpc.php';
   return $acquia_network_address;
@@ -479,7 +480,7 @@ function acquia_agent_settings($variable_name) {
 /**
  * Returns a string of highly randomized bytes (over the full 8-bit range).
  *
- * This function is better than simply calling mt_rand) or any other built-in
+ * This function is better than simply calling mt_rand() or any other built-in
  * PHP function because it can return a long string of bytes (compared to < 4
  * bytes normally from mt_rand)) and uses the best available pseudo-random source.
  *
@@ -537,4 +538,3 @@ function acquia_agent_form_system_modules_alter(&$form, &$form_state) {
     }
   }
 }
-

@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_sort_date.inc,v 1.1 2008/09/03 19:21:28 merlinofchaos Exp $
 
 /**
  * Basic sort handler for dates.
@@ -41,21 +40,12 @@ class views_handler_sort_date extends views_handler_sort {
    * Called to add the sort to a query.
    */
   function query() {
-    // When a exposed sort is by default ASC or DESC, we have to check if 
-    // this value was modified. If not, we use the default value for this sort.
-    if (!empty($this->options['exposed']) && !empty($this->view->exposed_input[$this->options['expose']['identifier']])) {
-      $sort = drupal_strtolower($this->view->exposed_input[$this->options['expose']['identifier']]);
-    }
-    else {
-      $sort = drupal_strtolower($this->options['order']);
-    }
-    
     $this->ensure_my_table();
     switch ($this->options['granularity']) {
       case 'second':
       default:
-        $formula = NULL;
-        break;
+        $this->query->add_orderby($this->table_alias, $this->real_field, $this->options['order']);
+        return;
       case 'minute':
         $formula = views_date_sql_format('YmdHi', "$this->table_alias.$this->real_field");
         break;
@@ -73,14 +63,7 @@ class views_handler_sort_date extends views_handler_sort {
         break;
     }
 
-    // Ensure sort is valid and add the field.
-    if (!empty($sort) && ($sort == 'asc' || $sort == 'desc')) {
-      if ($formula) {
-        $this->query->add_orderby(NULL, $formula, $sort, $this->table_alias . '_' . $this->field . '_' . $this->options['granularity']);
-      }
-      else {
-        $this->query->add_orderby($this->table_alias, $this->real_field, $sort);
-      }
-    }
+    // Add the field.
+    $this->query->add_orderby(NULL, $formula, $this->options['order'], $this->table_alias . '_' . $this->field . '_' . $this->options['granularity']);
   }
 }

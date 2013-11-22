@@ -1,5 +1,4 @@
 <?php
-// $Id: acquia_agent_drupal_version.inc,v 1.1 2008/12/30 16:51:45 pwolanin Exp $
 
 /**
  * @file

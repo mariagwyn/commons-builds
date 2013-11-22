@@ -1,5 +1,4 @@
 <?php
-// $Id: views_handler_sort_formula.inc,v 1.1 2008/09/03 19:21:28 merlinofchaos Exp $
 /**
  * Base sort handler that has no options and performs a simple sort
  *
@@ -41,18 +40,8 @@ class views_handler_sort_formula extends views_handler_sort {
     else {
       $formula = $this->formula;
     }
-    
-    if (!empty($this->options['exposed']) && !empty($this->view->exposed_input[$this->options['expose']['identifier']])) {
-      $sort = drupal_strtolower($this->view->exposed_input[$this->options['expose']['identifier']]);
-    }
-    else {
-      $sort = drupal_strtolower($this->options['order']);
-    }    
-    
-    // Ensure $this->sort is valid and add the field.
-    if (!empty($sort) && ($sort == 'asc' || $sort == 'desc')) {
-      $this->ensure_my_table();
-      $this->query->add_orderby(NULL, $formula, $sort, $this->table_alias . '_' . $this->field);
-    }    
+    $this->ensure_my_table();
+    // Add the field.
+    $this->query->add_orderby(NULL, $formula, $this->options['order'], $this->table_alias . '_' . $this->field);
   }
 }

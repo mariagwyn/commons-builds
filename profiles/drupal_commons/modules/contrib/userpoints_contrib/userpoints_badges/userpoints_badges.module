@@ -1,5 +1,5 @@
 <?php
-// $Id: userpoints_badges.module,v 1.1.2.4 2010/08/11 17:13:45 kbahey Exp $
+// $Id$
 
 function userpoints_badges_menu() {
   $items = array();

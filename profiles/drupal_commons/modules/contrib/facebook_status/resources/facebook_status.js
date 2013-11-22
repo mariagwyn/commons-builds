@@ -19,6 +19,7 @@ Drupal.behaviors.facebookStatus = function (context) {
   if ($.fn.autogrow && $facebook_status_field) {
     // jQuery Autogrow plugin integration.
     $facebook_status_field.autogrow({expandTolerance: 2});
+    $facebook_status_field.css('resize', 'none');
   }
   if (Drupal.settings.facebook_status.autofocus) {
     $facebook_status_field.focus();
@@ -60,12 +61,8 @@ Drupal.behaviors.facebookStatus = function (context) {
       th.html(newMsgText);
       th.find('.facebook-status-readmore').hide();
       th.find('.facebook-status-readmore-toggle').click(function(e) {
-        var thi = $(this);
         e.preventDefault();
-        var pa = thi.parents('.facebook-status-content');
-        thi.hide();
-        pa.find('.facebook-status-hellip').hide();
-        pa.find('.facebook-status-readmore').show();
+        th.html(oldMsgText);
       });
     }
   }

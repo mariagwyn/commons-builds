@@ -1,5 +1,4 @@
 <?php
-// $Id: constraint_username.inc,v 1.2 2008/07/13 23:16:45 miglius Exp $
 /**
  * @file
  * Password policy constraint callbacks.

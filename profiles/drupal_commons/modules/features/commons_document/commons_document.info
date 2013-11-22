@@ -48,6 +48,7 @@ features[variable][] = "comment_subject_field_document"
 features[variable][] = "content_extra_weights_document"
 features[variable][] = "node_options_document"
 features[variable][] = "og_content_type_usage_document"
+features[variable][] = "remove_markup_default_document"
 features[views][] = "content_document_page"
 features[views][] = "document_latest_comments"
 features[views][] = "group_block_doc_latest_comments"
@@ -56,3 +57,10 @@ features[views][] = "group_tab_documents"
 features[views_api][] = "api:2"
 name = "Commons Document"
 package = "Commons"
+
+; Information added by drupal.org packaging script on 2012-01-18
+version = "6.x-2.4"
+core = "6.x"
+project = "commons"
+datestamp = "1326924940"
+

@@ -1,5 +1,5 @@
 <?php
-// $Id: userpoints_pageviews.module,v 1.1.4.4 2009/01/20 21:15:11 kbahey Exp $
+// $Id$
 
 
 define('USERPOINTS_PAGEVIEWS_NODE',                	'userpoints_pageviews_node_');

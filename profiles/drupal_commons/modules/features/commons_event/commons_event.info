@@ -63,6 +63,7 @@ features[variable][] = "comment_subject_field_event"
 features[variable][] = "content_extra_weights_event"
 features[variable][] = "node_options_event"
 features[variable][] = "og_content_type_usage_event"
+features[variable][] = "remove_markup_default_event"
 features[views][] = "content_event_calendar"
 features[views][] = "content_event_page"
 features[views][] = "event_latest"
@@ -79,3 +80,10 @@ features[views][] = "upcoming_events"
 features[views_api][] = "api:2"
 name = "Commons Event"
 package = "Commons"
+
+; Information added by drupal.org packaging script on 2012-01-18
+version = "6.x-2.4"
+core = "6.x"
+project = "commons"
+datestamp = "1326924940"
+

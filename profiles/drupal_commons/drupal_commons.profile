@@ -29,9 +29,6 @@ function drupal_commons_profile_modules() {
     
     // Date
     'date_api', 'date_timezone',
-
-    // Taxonomy
-    'tagging',
     
     // Misc
     'vertical_tabs', 'transliteration', 'password_policy',
@@ -41,9 +38,7 @@ function drupal_commons_profile_modules() {
     
     // Features
     'features',
-    
-    // Commons update tracker
-    'commons_release',
+
   );
 
   return $modules;
@@ -146,7 +141,8 @@ function drupal_commons_profile_tasks(&$task, $url) {
     $operations[] = array('drupal_commons_config_views', array());
     $operations[] = array('drupal_commons_config_images', array());
     $operations[] = array('drupal_commons_config_vars', array());
-  
+    $operations[] = array('drupal_commons_config_tidy_node_links', array());
+
     // Build the batch process
     $batch = array(
       'operations' => $operations,
@@ -455,6 +451,20 @@ function drupal_commons_config_vars() {
   
   // Don't restrict user profile image upload size
   variable_set('user_picture_file_size', '');
+  
+  // Set user terms to use the "tags" vocabulary we created
+  $vid = variable_get('commons_tags_vid', 1);
+  variable_set('user_terms_vocabs', array($vid => $vid));
+}
+
+/**
+ * Configure tidy node links
+ */
+function drupal_commons_config_tidy_node_links() {
+  $theme = variable_get('theme_default','garland');
+  if ($theme == 'commons_origins') {
+    drupal_install_modules(array('tidy_node_links'));
+  }
 }
 
 /**

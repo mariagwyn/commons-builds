@@ -511,10 +511,9 @@ function shoutbox_add_form_validate($form, &$form_state) {
  *   themed not in a table, and an array of raw shouts
  */
 function shoutbox_display_posts($show_amount, $wrap = TRUE, $pager = FALSE) {
-  $count = 0;
-  $output = '';
   $rows = array();
   $raw = array();
+  $contexts = array();
   
   // Figure out if we should display it in ascending or descending order.
   $ascending = variable_get('shoutbox_ascending', TRUE);
@@ -546,30 +545,16 @@ function shoutbox_display_posts($show_amount, $wrap = TRUE, $pager = FALSE) {
       // Theme the shoutbox post
       $post = theme('shoutbox_post', $shout, $shoutlinks);
       
-      // Add the post to the output either ascending or descending
-      $output = $ascending ? ($output . $post) : ($post . $output);
-
       // Add themed rows
-      $rows[] = array(theme('shoutbox_post', $shout, $shoutlinks, FALSE));
-      
+      $rows[] = array(theme('shoutbox_post', $shout, $shoutlinks, FALSE));      
+   
       // Store the raw shout
       $raw[] = $shout;
     }
   }
-    
-  if (!$count) {
-    $output .= '<div class="shoutbox-even" title="no shouts">' . t('There are no shouts to view.') . "</div>\n";
-  }
-
-  // Don't wrap for ahah refreshes
-  if ($wrap) {
-    // Wrap shoutbox messages.
-    $output = "<div id=\"shoutbox-posts\">\n" . $output . "</div>\n";
-  }
 
   $output_data['count'] = count($rows);
-  $output_data['output'] = $output;
-  $output_data['rows'] = $rows;
+  $output_data['rows'] = ($ascending ? $rows : array_reverse($rows));
   $output_data['raw'] = $raw;
   return $output_data;
 }

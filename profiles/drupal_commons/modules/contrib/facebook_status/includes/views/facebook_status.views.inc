@@ -14,7 +14,7 @@ function facebook_status_views_data() {
   $data['facebook_status']['table']['join'] = array(
     'users' => array(
       'left_field' => 'uid',
-      'field' => 'recipient',
+      'field' => 'sender',
       'type' => 'INNER',
     ),
   );
@@ -33,6 +33,27 @@ function facebook_status_views_data() {
     'help' => t('Stores status updates.'),
     'weight' => 10,
   );
+
+  // Make it possible to add a relationship to the Users table.
+  // Commented out because Views automatically JOINs on the {users} table when
+  // using User data without a Relationship, so adding the Relationship will
+  // cause a duplicate JOIN.
+  /*
+  $data['facebook_status']['users'] = array(
+    'group' => t('Facebook-style Statuses'),
+    'relationship' => array(
+      'title' => t('Users'),
+      'label' => t('Users'),
+      'help' => t('Add a relationship to gain access to information related to the users who submitted the relevant statuses.'),
+      'relationship table' => 'facebook_status',
+      'relationship field' => 'sender',
+      'base' => 'users',
+      'field' => 'uid',
+      'type' => 'INNER',
+      'handler' => 'views_handler_relationship',
+    ),
+  );
+   */
 
   // Declares the Status ID column.
   $data['facebook_status']['sid'] = array(
@@ -219,6 +240,15 @@ function facebook_status_views_data() {
       'label' => t('Restrict to own status updates'),
     ),
   );
+  $data['facebook_status']['sender_pic'] = array(
+    'title' => t('Sender picture'),
+    'help' => t('The picture of the user who sent the status message.'),
+    'field' => array(
+      'field' => 'sender',
+      'handler' => 'facebook_status_views_handler_field_sender_pic',
+      'click sortable' => FALSE,
+    ),
+  );
   $data['facebook_status']['user_contextual_pic'] = array(
     'title' => t('Users with Pictures'),
     'help' => t('The themed username(s) and pictures of either the owner or the sender and recipient of the status, depending on the context.'),
@@ -285,6 +315,16 @@ function facebook_status_views_data() {
     ),
   );
 
+  $data['facebook_status']['classes'] = array(
+    'title' => t('HTML classes'),
+    'help' => t('The HTML classes that should be associated with a status.'),
+    'field' => array(
+      'field' => 'sender',
+      'handler' => 'facebook_status_views_handler_field_classes',
+      'click sortable' => FALSE,
+    ),
+  );
+
   // Limits users by who they have communicated with.
   $data['users']['communicated'] = array(
     'title' => t('Users have communicated with current user'),
@@ -325,15 +365,34 @@ function facebook_status_views_data() {
     ),
   );
 
-  // Expose data from a user's friends AND that user.
-  $data['user_relationships']['rels_and_me'] = array(
-    'title' => t('Requestee or Requester or Argument user'),
-    'help' => t('Filters results to show content for the requestee, requester, or argument user.'),
-    'argument' => array(
-      'field' => 'requestee_id',
-      'handler' => 'facebook_status_views_handler_argument_rels_and_me',
-    ),
-  );
+  if (module_exists('user_relationships_api')) {
+    // Expose data from a user's friends AND that user.
+    $data['user_relationships']['rels_and_me'] = array(
+      'title' => t('Requestee or Requester or Argument user'),
+      'help' => t('Filters results to show content for the requestee, requester, or argument user.'),
+      'argument' => array(
+        'field' => 'requestee_id',
+        'handler' => 'facebook_status_views_handler_argument_rels_and_me',
+      ),
+    );
+  }
+  
+  if (module_exists('og_views')) {
+    // Include statuses from a user's groups.
+    $data['facebook_status']['og_statuses'] = array(
+      'title' => t('Show group statuses'),
+      'filter' => array(
+        'field' => 'type',
+        'handler' => 'facebook_status_views_handler_filter_og',
+        'help' => t("Limits statuses to those in the current user's stream and in the current user's groups' streams."),
+      ),
+      'argument' => array(
+        'field' => 'sender',
+        'handler' => 'facebook_status_views_handler_argument_og',
+        'help' => t("Limits statuses to those in the argument user's stream and in the argument user's groups' streams."),
+      ),
+    );
+  }
 
   return $data;
 }
@@ -350,11 +409,17 @@ function facebook_status_views_handlers() {
       'facebook_status_views_handler_argument_communicated' => array(
         'parent' => 'views_handler_argument',
       ),
+      'facebook_status_views_handler_argument_og' => array(
+        'parent' => 'views_handler_argument',
+      ),
       'facebook_status_views_handler_argument_participant' => array(
         'parent' => 'views_handler_argument',
       ),
       'facebook_status_views_handler_argument_rels_and_me' => array(
         'parent' => 'views_handler_argument',
+      ),
+      'facebook_status_views_handler_field_classes' => array(
+        'parent' => 'views_handler_field',
       ),
       'facebook_status_views_handler_field_created' => array(
         'parent' => 'views_handler_field_date',
@@ -392,6 +457,9 @@ function facebook_status_views_handlers() {
       'facebook_status_views_handler_field_respond' => array(
         'parent' => 'views_handler_field',
       ),
+      'facebook_status_views_handler_field_sender_pic' => array(
+        'parent' => 'views_handler_field',
+      ),
       'facebook_status_views_handler_filter_autotype' => array(
         'parent' => 'views_handler_filter',
       ),
@@ -400,6 +468,9 @@ function facebook_status_views_handlers() {
       ),
       'facebook_status_views_handler_filter_latest_only' => array(
         'parent' => 'views_handler_filter_boolean_operator',
+      ),
+      'facebook_status_views_handler_filter_og' => array(
+        'parent' => 'views_handler_filter',
       ),
       'facebook_status_views_handler_filter_participant' => array(
         'parent' => 'views_handler_filter',

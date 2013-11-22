@@ -88,7 +88,7 @@ ul.krumo-node ul{
 .node .inner ul li,
 .panel-pane .inner ul li,
 .block .content ul li {
-  background: transparent url(../images/gray-arrow-right.png) no-repeat 0 4px;
+  background: transparent url(../images/gray-arrow-right.png) no-repeat 3px center;
   list-style-image: none;
   list-style: none;
   margin-bottom: 8px;
@@ -96,8 +96,13 @@ ul.krumo-node ul{
   text-indent: 0;
 }
 
+.node .inner .links ul {
+	padding-left: 0px;
+}
+
 .node .inner .links li > a {
 	color: #669acc;
+	white-space: nowrap;
 }
 
 .node .inner .links .comment_add {
@@ -893,13 +898,14 @@ ul.links li {
 
 .node .inner ul.menu li a,
 .block .content ul.menu li a,
-.panel-pane .inner ul.menu li aa {
-	background: transparent url(../images/gray-arrow-right.png) no-repeat 0 1px;
+.panel-pane .inner ul.menu li a {
+	background: transparent url(../images/gray-arrow-right.png) no-repeat left center;
 	list-style-image: none;
 	list-style: none;
 	margin: 0 0 8px 0;
 	padding: 0 0 0 22px;
 	text-indent: 0;
+
 }
 
 /* Only more/read more links */
@@ -1178,6 +1184,12 @@ ul.pager li a:focus {
   color: white;
 }
 
+.facebook-status-submit.button.primary {
+  background-color: transparent;
+  border-color: #1879B1 #ddd #ddd #ddd;
+  border-width: 1px 4px 4px 0;
+}
+
 .button,
 .fbsmp-plugin-icon {
   border-color: #c2c2c2;
@@ -1188,9 +1200,15 @@ form input.form-submit {
   margin: 0;
 }
 
+.fbsmp-cancel-button {
+  background: #1879B1;
+}
+
+/*  Commented out to support new Facebook style buttons
+ * 
 .fbsmp-icon-list {
   border-color: #c2c2c2;
-}
+}*/
 
 .fbsmp-icon-list .button:first-child {
   border-left: 0 none;
@@ -1302,11 +1320,11 @@ tbody th {
 
 tr.even,
 tr.even td {
-	background-color: #fff;
-	border-bottom: 1px dotted #ccc;
-	font-size: 1em;
-	line-height: 1.2em;
-	padding: .6em .2em;
+  background-color: #fff;
+  border-bottom: 1px dotted #ccc;
+  font-size: 1em;
+  line-height: 1.2em;
+  padding: .6em .2em;
 }
 
 tr.even .form-item ,
@@ -1322,8 +1340,11 @@ tr.odd .form-item {
 
 tr.odd,
 tr.odd td {
-	background-color: #fff;
-	border-bottom: 1px dotted #ccc;
+  background-color: #fff;
+  border-bottom: 1px dotted #ccc;
+  font-size: 1em;
+  line-height: 1.2em;
+  padding: .6em .2em;
 }
 
 tr.views-row-last,
@@ -1339,6 +1360,12 @@ tr.views-row-first.views-row-last td,
 tr.first.last,
 tr.first.last td {
 	border-bottom: 1px dotted #ccc;
+}
+
+/* Remove border-bottom from group subscribe buttons */
+
+table tr td.views-field-subscribe {
+border-bottom: none;
 }
 
 table tr td.active {
@@ -1521,6 +1548,13 @@ div.comment ul.links a {
 
 .facebook-status-subitem.form-piece {
   padding-top: 0;
+}
+
+.fbss-comments ul.fbss-comments-links li {
+  background: none;
+  padding: 1px 7px;
+  margin: 0;
+  border-right: none;
 }
 
 /* @end */
@@ -3378,4 +3412,12 @@ a.feed-icon img {
     margin: 2px;
     padding: 1px 5px 2px;
     text-transform: uppercase;
+    text-align: center;
+    width: 80px;
+}
+
+.view-subgroups-main-listing .views-field-subscribe,
+.view-subgroups-main-listing .views-field-leave-group {
+  float: none;
+  margin-left: 0;
 }

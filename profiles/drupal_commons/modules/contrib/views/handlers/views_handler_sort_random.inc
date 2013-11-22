@@ -1,13 +1,9 @@
 <?php
-// $Id: views_handler_sort_random.inc,v 1.1 2008/09/03 19:21:28 merlinofchaos Exp $
 
 /**
  * Handle a random sort.
  */
 class views_handler_sort_random extends views_handler_sort {
-
-  function can_expose() {return FALSE;}
-
   function query() {
     global $db_type;
     switch ($db_type) {
@@ -27,9 +23,5 @@ class views_handler_sort_random extends views_handler_sort {
   function options_form(&$form, &$form_state) {
     parent::options_form($form, $form_state);
     $form['order']['#access'] = FALSE;
-  }
-  
-  function admin_summary() {
-    return '';
   }
 }

@@ -1,4 +1,4 @@
-$Id: README.txt,v 1.1 2009/01/29 17:36:04 kbahey Exp $
+$Id$
 
 This is a very small module that adds a "rules" event for the votingapi "when user votes", and points are awarded accordingly.
 

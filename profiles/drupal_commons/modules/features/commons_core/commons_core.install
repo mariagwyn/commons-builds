@@ -67,8 +67,8 @@ function commons_core_update_6000() {
   module_disable(array('better_formats'));
   drupal_uninstall_module('better_formats');
   
-  // Enable wysiwyg filter, views_bulk_operations, and commons_release
-  drupal_install_modules(array('wysiwyg_filter', 'views_bulk_operations', 'commons_release'));
+  // Enable wysiwyg filter and views_bulk_operations.
+  drupal_install_modules(array('wysiwyg_filter', 'views_bulk_operations',));
   
   // Replace HTML filter with WYSIWYG filter for the Filtered HTML format
   db_query("DELETE FROM {filters} WHERE format = 1 AND module = 'filter' AND delta = 0");
@@ -375,5 +375,42 @@ function commons_core_update_6012() {
   }
   
   variable_set('commons_tags_vid', $vid);
+  return array();
+}
+
+/**
+ * Delete Rules deprecated by http://drupal.org/node/1297308.
+ */
+function commons_core_update_6013() {
+  $deprecated_rules = array(
+    'rules_activity_log_facebook_status_insert_private',
+    'rules_log_activity_when_a_user_sends_a_private_message_with_an_attachment',
+    'rules_email_log_activity_when_a_user_sends_a_private_message',
+    'rules_email_log_activity_when_a_user_sends_a_private_message_with_an_attachment',
+  );
+  foreach ($deprecated_rules as $rule) {
+    rules_item_delete('rules', $rule);
+  }
+  return array();
+}
+
+/**
+ * Uninstall deprecated commons_release module
+ * per http://drupal.org/node/1335870.
+ */
+function commons_core_update_6014() {
+  module_disable(array('commons_release'));
+  drupal_uninstall_module('commons_release');
+  return array();
+}
+
+/**
+ * Install tidy_node_links module
+ */
+function commons_core_update_6015() {
+  $theme = variable_get('theme_default','garland');
+  if ($theme == 'commons_origins') {
+    drupal_install_modules(array('tidy_node_links'));
+  }
   return array();
 }

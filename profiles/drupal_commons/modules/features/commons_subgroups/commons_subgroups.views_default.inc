@@ -11,10 +11,9 @@ function commons_subgroups_views_default_views() {
   $view->name = 'subgroups_main_listing';
   $view->description = 'The main listing of all groups (optimized for subgroups)';
   $view->tag = '';
-  $view->view_php = '';
   $view->base_table = 'node';
-  $view->is_cacheable = FALSE;
-  $view->api_version = 2;
+  $view->core = 0;
+  $view->api_version = '2';
   $view->disabled = FALSE; /* Edit this to true to make a default view disabled initially */
   $handler = $view->new_display('default', 'Defaults', 'default');
   $handler->override_option('fields', array(
@@ -75,7 +74,7 @@ function commons_subgroups_views_default_views() {
       'hide_empty' => 0,
       'empty_zero' => 0,
       'link_to_node' => 0,
-      'label_type' => 'none',
+      'label_type' => 'custom',
       'format' => 'group_images_medium_linked',
       'multiple' => array(
         'group' => TRUE,
@@ -93,14 +92,16 @@ function commons_subgroups_views_default_views() {
       'relationship' => 'none',
     ),
     'title' => array(
-      'label' => '',
+      'label' => 'Title',
       'alter' => array(
         'alter_text' => 0,
         'text' => '',
         'make_link' => 0,
         'path' => '',
+        'absolute' => 0,
         'link_class' => '',
         'alt' => '',
+        'rel' => '',
         'prefix' => '',
         'suffix' => '',
         'target' => '',
@@ -115,8 +116,9 @@ function commons_subgroups_views_default_views() {
       'empty' => '',
       'hide_empty' => 0,
       'empty_zero' => 0,
+      'hide_alter_empty' => 1,
       'link_to_node' => 1,
-      'exclude' => 1,
+      'exclude' => 0,
       'id' => 'title',
       'table' => 'node',
       'field' => 'title',
@@ -126,10 +128,10 @@ function commons_subgroups_views_default_views() {
       ),
     ),
     'tid' => array(
-      'label' => 'Tags',
+      'label' => '',
       'alter' => array(
-        'alter_text' => 0,
-        'text' => '',
+        'alter_text' => 1,
+        'text' => '<em>[tid]</em>',
         'make_link' => 0,
         'path' => '',
         'link_class' => '',
@@ -153,28 +155,62 @@ function commons_subgroups_views_default_views() {
       'link_to_taxonomy' => 1,
       'limit' => 0,
       'vids' => array(
-        '5' => 0,
-        '2' => 0,
-        '3' => 0,
-        '6' => 0,
-        '4' => 0,
+        2 => 0,
+        1 => 0,
+        3 => 0,
       ),
-      'exclude' => 1,
+      'exclude' => 0,
       'id' => 'tid',
       'table' => 'term_node',
       'field' => 'tid',
+      'relationship' => 'none',
+      'override' => array(
+        'button' => 'Override',
+      ),
+    ),
+    'child_count' => array(
+      'label' => 'Subgroups',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 1,
+        'path' => 'groups/sub/[nid]',
+        'absolute' => 0,
+        'link_class' => '',
+        'alt' => '',
+        'rel' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'hide_alter_empty' => 1,
+      'exclude' => 0,
+      'id' => 'child_count',
+      'table' => 'og_subgroups',
+      'field' => 'child_count',
       'override' => array(
         'button' => 'Override',
       ),
       'relationship' => 'none',
+      'deep' => 1,
     ),
-    'child_count' => array(
-      'label' => 'Child count',
+    'posts_count' => array(
+      'label' => 'Posts',
       'alter' => array(
-        'alter_text' => 1,
-        'text' => '([child_count])',
-        'make_link' => 1,
-        'path' => 'groups/sub/[nid]',
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
         'link_class' => '',
         'alt' => '',
         'prefix' => '',
@@ -191,21 +227,63 @@ function commons_subgroups_views_default_views() {
       'empty' => '',
       'hide_empty' => 0,
       'empty_zero' => 0,
-      'exclude' => 1,
-      'id' => 'child_count',
-      'table' => 'og_subgroups',
-      'field' => 'child_count',
+      'set_precision' => FALSE,
+      'precision' => 0,
+      'decimal' => '.',
+      'separator' => ',',
+      'prefix' => '',
+      'suffix' => '',
+      'exclude' => 0,
+      'id' => 'posts_count',
+      'table' => 'og_statistics',
+      'field' => 'posts_count',
       'override' => array(
         'button' => 'Override',
       ),
       'relationship' => 'none',
-      'shallow' => 0,
-      'deep' => 1,
+    ),
+    'members_count' => array(
+      'label' => 'Members',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'set_precision' => FALSE,
+      'precision' => 0,
+      'decimal' => '.',
+      'separator' => ',',
+      'prefix' => '',
+      'suffix' => '',
+      'exclude' => 0,
+      'id' => 'members_count',
+      'table' => 'og_statistics',
+      'field' => 'members_count',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
     ),
     'description' => array(
-      'label' => '',
+      'label' => 'Description',
       'alter' => array(
-        'alter_text' => 1,
+        'alter_text' => 0,
         'text' => '<div class="title">[title]</div>
 <div class="tags">Tags: [tid] Sub-groups: [child_count]</div>
 <div class="description">[description] </div>',
@@ -235,6 +313,40 @@ function commons_subgroups_views_default_views() {
       'override' => array(
         'button' => 'Override',
       ),
+    ),
+    'created' => array(
+      'label' => 'Created',
+      'alter' => array(
+        'alter_text' => 0,
+        'text' => '',
+        'make_link' => 0,
+        'path' => '',
+        'link_class' => '',
+        'alt' => '',
+        'prefix' => '',
+        'suffix' => '',
+        'target' => '',
+        'help' => '',
+        'trim' => 0,
+        'max_length' => '',
+        'word_boundary' => 1,
+        'ellipsis' => 1,
+        'html' => 0,
+        'strip_tags' => 0,
+      ),
+      'empty' => '',
+      'hide_empty' => 0,
+      'empty_zero' => 0,
+      'date_format' => 'custom',
+      'custom_date_format' => 'Y-m-d',
+      'exclude' => 0,
+      'id' => 'created',
+      'table' => 'node',
+      'field' => 'created',
+      'override' => array(
+        'button' => 'Override',
+      ),
+      'relationship' => 'none',
     ),
     'subscribe' => array(
       'label' => '',
@@ -275,8 +387,10 @@ function commons_subgroups_views_default_views() {
         'text' => '',
         'make_link' => 0,
         'path' => '',
+        'absolute' => 0,
         'link_class' => '',
         'alt' => '',
+        'rel' => '',
         'prefix' => '',
         'suffix' => '',
         'target' => '',
@@ -289,8 +403,9 @@ function commons_subgroups_views_default_views() {
         'strip_tags' => 0,
       ),
       'empty' => '',
-      'hide_empty' => 1,
+      'hide_empty' => 0,
       'empty_zero' => 0,
+      'hide_alter_empty' => 1,
       'text' => 'Leave',
       'exclude' => 0,
       'id' => 'leave_group',
@@ -304,10 +419,10 @@ function commons_subgroups_views_default_views() {
   ));
   $handler->override_option('sorts', array(
     'created' => array(
-      'exposed' => TRUE,
-      'order' => 'unsorted',
-      'identifier' => 'unsorted',
+      'order' => 'DESC',
       'granularity' => 'second',
+      'exposed' => TRUE,
+      'identifier' => 'unsorted',
       'id' => 'created',
       'table' => 'node',
       'field' => 'created',
@@ -322,8 +437,8 @@ function commons_subgroups_views_default_views() {
       ),
     ),
     'title' => array(
+      'order' => 'ASC',
       'exposed' => TRUE,
-      'order' => 'unsorted',
       'identifier' => 'unsorted',
       'id' => 'title',
       'table' => 'node',
@@ -338,26 +453,9 @@ function commons_subgroups_views_default_views() {
       ),
       'relationship' => 'none',
     ),
-    'members_count' => array(
-      'exposed' => TRUE,
-      'order' => 'unsorted',
-      'identifier' => 'unsorted',
-      'id' => 'members_count',
-      'table' => 'og_statistics',
-      'field' => 'members_count',
-      'expose' => array(
-        'label' => 'Members',
-        'identifier' => 'members_count_sort',
-        'order' => 'unsorted',
-      ),
-      'override' => array(
-        'button' => 'Override',
-      ),
-      'relationship' => 'none',
-    ),
     'posts_count' => array(
-      'exposed' => TRUE,
       'order' => 'DESC',
+      'exposed' => TRUE,
       'identifier' => 'unsorted',
       'id' => 'posts_count',
       'table' => 'og_statistics',
@@ -485,7 +583,7 @@ function commons_subgroups_views_default_views() {
       ),
       'type' => 'textfield',
       'limit' => TRUE,
-      'vid' => '2',
+      'vid' => '1',
       'id' => 'tid',
       'table' => 'term_node',
       'field' => 'tid',
@@ -517,8 +615,67 @@ function commons_subgroups_views_default_views() {
   $handler->override_option('empty_format', '1');
   $handler->override_option('use_pager', '1');
   $handler->override_option('distinct', 1);
+  $handler->override_option('style_plugin', 'table');
   $handler->override_option('style_options', array(
     'grouping' => '',
+    'override' => 1,
+    'sticky' => 0,
+    'order' => 'desc',
+    'summary' => '',
+    'columns' => array(
+      'nid' => 'nid',
+      'field_group_image_fid' => 'field_group_image_fid',
+      'title' => 'title',
+      'tid' => 'title',
+      'child_count' => 'child_count',
+      'posts_count' => 'posts_count',
+      'members_count' => 'members_count',
+      'description' => 'description',
+      'created' => 'created',
+      'subscribe' => 'subscribe',
+      'leave_group' => 'subscribe',
+    ),
+    'info' => array(
+      'nid' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'field_group_image_fid' => array(
+        'separator' => '',
+      ),
+      'title' => array(
+        'sortable' => 1,
+        'separator' => '<br />',
+      ),
+      'tid' => array(
+        'separator' => '',
+      ),
+      'child_count' => array(
+        'separator' => '',
+      ),
+      'posts_count' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'members_count' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'description' => array(
+        'separator' => '',
+      ),
+      'created' => array(
+        'sortable' => 1,
+        'separator' => '',
+      ),
+      'subscribe' => array(
+        'separator' => '',
+      ),
+      'leave_group' => array(
+        'separator' => '',
+      ),
+    ),
+    'default' => 'created',
   ));
   $handler = $view->new_display('feed', 'Feed', 'feed');
   $handler->override_option('sorts', array(
@@ -640,6 +797,7 @@ function commons_subgroups_views_default_views() {
   ));
   $handler->override_option('sitename_title', FALSE);
   $handler = $view->new_display('page', 'Page', 'page_1');
+  $handler->override_option('sorts', array());
   $handler->override_option('filters', array(
     'status' => array(
       'id' => 'status',
@@ -726,6 +884,7 @@ function commons_subgroups_views_default_views() {
     'name' => 'navigation',
   ));
   $handler = $view->new_display('page', 'Subgroups', 'page_2');
+  $handler->override_option('sorts', array());
   $handler->override_option('arguments', array(
     'parent' => array(
       'default_action' => 'not found',
@@ -747,10 +906,10 @@ function commons_subgroups_views_default_views() {
       'field' => 'parent',
       'validate_user_argument_type' => 'uid',
       'validate_user_roles' => array(
-        '2' => 0,
-        '3' => 0,
-        '4' => 0,
-        '5' => 0,
+        2 => 0,
+        3 => 0,
+        4 => 0,
+        5 => 0,
       ),
       'override' => array(
         'button' => 'Use default',
@@ -775,9 +934,9 @@ function commons_subgroups_views_default_views() {
       'validate_argument_node_access' => 0,
       'validate_argument_nid_type' => 'nid',
       'validate_argument_vocabulary' => array(
-        '3' => 0,
-        '2' => 0,
-        '4' => 0,
+        3 => 0,
+        2 => 0,
+        4 => 0,
       ),
       'validate_argument_type' => 'tid',
       'validate_argument_transform' => 0,

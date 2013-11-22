@@ -20,3 +20,10 @@ features[variable][] = "pathauto_tracker_pattern"
 features[variable][] = "pathauto_user_pattern"
 name = "Commons SEO"
 package = "Commons"
+
+; Information added by drupal.org packaging script on 2012-01-18
+version = "6.x-2.4"
+core = "6.x"
+project = "commons"
+datestamp = "1326924940"
+

@@ -1,5 +1,4 @@
 <?php
-// $Id: constraint_alphanumeric.inc,v 1.3 2009/05/08 14:19:02 miglius Exp $
 /**
  * @file
  * Password policy constraint callbacks.

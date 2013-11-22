@@ -1,5 +1,4 @@
 <?php
-// $Id: handlers.inc,v 1.119.2.4 2009/12/24 01:08:31 merlinofchaos Exp $
 /**
  * @file handlers.inc
  * Defines the various handler objects to help build and display views.
@@ -312,140 +311,38 @@ class views_handler extends views_object {
    * There is no need for this function to actually store the data.
    */
   function extra_options_submit($form, &$form_state) { }
-  
+
   /**
    * Set new exposed option defaults when exposed setting is flipped
    * on.
    */
   function expose_options() { }
-  
   /**
-   * Get information about the exposed form for the form renderer.
-   */
-  function exposed_info() { }
-  
-  /**
-   * Render our chunk of the exposed handler form when selecting
+   * Render our chunk of the exposed filter form when selecting
    */
   function exposed_form(&$form, &$form_state) { }
 
   /**
-   * Validate the exposed handler form
+   * Validate the exposed filter form
    */
   function exposed_validate(&$form, &$form_state) { }
 
   /**
-   * Submit the exposed handler form
+   * Submit the exposed filter form
    */
   function exposed_submit(&$form, &$form_state) { }
 
   /**
-   * Overridable form for exposed handler options.
+   * Get information about the exposed form for the form renderer.
    *
-   * If overridden, it is best to call the parent or re-implement
-   * the stuff here.
-   *
-   * Many handlers will need to override this in order to provide options
-   * that are nicely tailored to the given filter.
+   * @return
+   *   An array with the following keys:
+   *   - operator: The $form key of the operator. Set to NULL if no operator.
+   *   - value: The $form key of the value. Set to NULL if no value.
+   *   - label: The label to use for this piece.
    */
-  function expose_form(&$form, &$form_state) {
-    $form['expose']['start_left'] = array(
-      '#value' => '<div class="views-left-50">',
-    );
+  function exposed_info() { }
 
-    $this->expose_form_left($form, $form_state);
-
-    $form['expose']['end_left'] = array(
-      '#value' => '</div>',
-    );
-
-    $form['expose']['start_checkboxes'] = array(
-      '#value' => '<div class="form-checkboxes views-left-40 clear-block">',
-    );
-
-    $this->expose_form_right($form, $form_state);
-
-    $form['expose']['end_checkboxes'] = array(
-      '#value' => '</div>',
-    );
-  }
-
-  function expose_form_left(&$form, &$form_state) { }
-  
-  function expose_form_right(&$form, &$form_state){ }
-
-  /**
-   * Validate the options form.
-   */
-  function expose_validate($form, &$form_state) { }
-
-  /**
-   * Perform any necessary changes to the form exposes prior to storage.
-   * There is no need for this function to actually store the data.
-   */
-  function expose_submit($form, &$form_state) { }
- 
-    /**
-   * Shortcut to display the expose/hide button.
-   */
-  function show_expose_button(&$form, &$form_state) {
-    $form['expose_button'] = array(
-      '#prefix' => '<div class="views-expose clear-block">',
-      '#suffix' => '</div>',
-    );
-    if (empty($this->options['exposed'])) {
-      $form['expose_button']['button'] = array(
-        '#type' => 'submit',
-        '#value' => t('Expose'),
-        '#submit' => array('views_ui_config_item_form_expose'),
-      );
-      $form['expose_button']['markup'] = array(
-        '#prefix' => '<div class="description">',
-        '#value' => t('This item is currently not exposed. If you <strong>expose</strong> it, users will be able to change the filter as they view it.'),
-        '#suffix' => '</div>',
-      );
-    }
-    else {
-      $form['expose_button']['button'] = array(
-        '#type' => 'submit',
-        '#value' => t('Hide'),
-        '#submit' => array('views_ui_config_item_form_expose'),
-      );
-      $form['expose_button']['markup'] = array(
-        '#prefix' => '<div class="description">',
-        '#value' => t('This item is currently exposed. If you <strong>hide</strong> it, users will not be able to change the filter as they view it.'),
-        '#suffix' => '</div>',
-      );
-    }
-  }
-    
-  /**
-   * Shortcut to display the exposed options form.
-   */
-  function show_expose_form(&$form, &$form_state) {
-    if (empty($this->options['exposed'])) {
-      return;
-    }
-
-    $form['expose'] = array(
-      '#prefix' => '<div class="views-expose-options clear-block">',
-      '#suffix' => '</div>',
-    );
-    $this->expose_form($form, $form_state);
-
-    // When we click the expose button, we add new gadgets to the form but they
-    // have no data in $_POST so their defaults get wiped out. This prevents
-    // these defaults from getting wiped out. This setting will only be TRUE
-    // during a 2nd pass rerender.
-    if (!empty($form_state['force_expose_options'])) {
-      foreach (element_children($form['expose']) as $id) {
-        if (isset($form['expose'][$id]['#default_value']) && !isset($form['expose'][$id]['#value'])) {
-          $form['expose'][$id]['#value'] = $form['expose'][$id]['#default_value'];
-        }
-      }
-    }
-  }
-  
   /**
    * Determine if a handler can be exposed.
    */
@@ -546,7 +443,7 @@ class views_handler extends views_object {
   }
 
   /**
-   * Take input from exposed handlers and assign to this handler, if necessary.
+   * Take input from exposed filters and assign to this handler, if necessary.
    */
   function accept_exposed_input($input) { return TRUE; }
 
@@ -952,7 +849,10 @@ function views_get_timezone() {
       if ($GLOBALS['db_type'] == 'pgsql') {
         db_query("SET TIME ZONE INTERVAL '$offset' HOUR TO MINUTE");
       }
-      elseif ($GLOBALS['db_type'] == 'mysqli' || version_compare(mysql_get_server_info(), '4.1.3', '>=')) {
+      elseif ($GLOBALS['db_type'] == 'mysqli') {
+        db_query("SET @@session.time_zone = '$offset'");
+      }
+      elseif ($GLOBALS['db_type'] == 'mysql' && version_compare(db_version(), '4.1.3', '>=')) {
         db_query("SET @@session.time_zone = '$offset'");
       }
 
@@ -1033,22 +933,42 @@ function views_date_sql_format($format, $field, $field_type = 'int', $set_offset
     case 'mysqli':
       $replace = array(
         'Y' => '%Y',
+        'y' => '%y',
+        'M' => '%%b',
         'm' => '%m',
+        'n' => '%c',
+        'F' => '%M',
+        'D' => '%a',
         'd' => '%%d',
+        'l' => '%W',
+        'j' => '%e',
+        'W' => '%v',
         'H' => '%H',
+        'h' => '%h',
         'i' => '%i',
-        's' => '%s',
+        's' => '%%s',
+        'A' => '%p',
         );
       $format = strtr($format, $replace);
       return "DATE_FORMAT($field, '$format')";
     case 'pgsql':
       $replace = array(
         'Y' => 'YYYY',
+        'y' => 'YY',
+        'M' => 'Mon',
         'm' => 'MM',
+        'n' => 'MM', // no format for Numeric representation of a month, without leading zeros
+        'F' => 'Month',
+        'D' => 'Dy',
         'd' => 'DD',
+        'l' => 'Day',
+        'j' => 'DD', // no format for Day of the month without leading zeros
+        'W' => 'WW',
         'H' => 'HH24',
+        'h' => 'HH12',
         'i' => 'MI',
         's' => 'SS',
+        'A' => 'AM',
         );
       $format = strtr($format, $replace);
       return "TO_CHAR($field, '$format')";
@@ -1154,6 +1074,9 @@ function views_views_handlers() {
       'views_handler_argument_null' => array(
         'parent' => 'views_handler_argument',
       ),
+      'views_handler_argument_broken' => array(
+        'parent' => 'views_handler_argument',
+      ),
 
       // field handlers
       'views_handler_field' => array(
@@ -1191,6 +1114,12 @@ function views_views_handlers() {
       'views_handler_field_counter' => array(
         'parent' => 'views_handler_field',
       ),
+      'views_handler_field_math' => array(
+        'parent' => 'views_handler_field_numeric',
+      ),
+      'views_handler_field_broken' => array(
+        'parent' => 'views_handler_field',
+      ),
 
       // filter handlers
       'views_handler_filter' => array(
@@ -1223,10 +1152,16 @@ function views_views_handlers() {
       'views_handler_filter_many_to_one' => array(
         'parent' => 'views_handler_filter_in_operator',
       ),
+      'views_handler_filter_broken' => array(
+        'parent' => 'views_handler_filter',
+      ),
 
       // relationship handlers
       'views_handler_relationship' => array(
         'parent' => 'views_handler',
+      ),
+      'views_handler_relationship_broken' => array(
+        'parent' => 'views_handler_relationship',
       ),
 
 
@@ -1244,6 +1179,9 @@ function views_views_handlers() {
         'parent' => 'views_handler_sort',
       ),
       'views_handler_sort_random' => array(
+        'parent' => 'views_handler_sort',
+      ),
+      'views_handler_sort_broken' => array(
         'parent' => 'views_handler_sort',
       ),
     ),
@@ -1267,15 +1205,15 @@ function views_views_handlers() {
  *   // PHP 4 doesn't call constructors of the base class automatically from a
  *   // constructor of a derived class. It is your responsibility to propagate
  *   // the call to constructors upstream where appropriate.
- *   function construct($table, $left_table, $left_field, $field, $extra = array(), $type = 'LEFT') {
+ *   function construct($table = NULL, $left_table = NULL, $left_field = NULL, $field = NULL, $extra = array(), $type = 'LEFT') {
  *     parent::construct($table, $left_table, $left_field, $field, $extra, $type);
  *   }
  *
  *   function join($table, &$query) {
  *     $output = parent::join($table, $query);
+ *     $output .= "AND foo.bar = baz.boing";
+ *     return $output;
  *   }
- *   $output .= "AND foo.bar = baz.boing";
- *   return $output;
  * }
  * @endcode
  */
@@ -1357,6 +1295,17 @@ class views_join {
     }
 
     $output = " $this->type JOIN $right_table $table[alias] ON $left_field = $table[alias].$this->field";
+
+    // Load query tokens replacements.
+    $view = views_get_current_view();
+    $replacements = array();
+    if (!empty($view)) {
+      $replacements = $view->substitutions();
+    }
+    else {
+      vpr('The current view is not set, maybe some code missed to execute $view->pre_execute()');
+    }
+
     // Tack on the extra.
     if (isset($this->extra)) {
       if (is_array($this->extra)) {
@@ -1372,6 +1321,9 @@ class views_join {
           elseif (isset($info['table'])) {
             $join_table = $info['table'] . '.';
           }
+
+          // Apply query token replacements.
+          $info['value'] = str_replace(array_keys($replacements), $replacements, $info['value']);
 
           // And now deal with the value and the operator.  Set $q to
           // a single-quote for non-numeric values and the
@@ -1459,34 +1411,66 @@ function views_views_api() {
   );
 }
 
-function aggregator_views_api() { return views_views_api(); }
+if (!function_exists('aggregator_views_api')) {
+  function aggregator_views_api() { return views_views_api(); }
+}
 
-function book_views_api() { return views_views_api(); }
+if (!function_exists('book_views_api')) {
+  function book_views_api() { return views_views_api(); }
+}
 
-function comment_views_api() { return views_views_api(); }
+if (!function_exists('comment_views_api')) {
+  function comment_views_api() { return views_views_api(); }
+}
 
-function locale_views_api() { return views_views_api(); }
+if (!function_exists('locale_views_api')) {
+  function locale_views_api() { return views_views_api(); }
+}
 
-function filter_views_api() { return views_views_api(); }
+if (!function_exists('filter_views_api')) {
+  function filter_views_api() { return views_views_api(); }
+}
 
-function node_views_api() { return views_views_api(); }
+if (!function_exists('node_views_api')) {
+  function node_views_api() { return views_views_api(); }
+}
 
-function poll_views_api() { return views_views_api(); }
+if (!function_exists('poll_views_api')) {
+  function poll_views_api() { return views_views_api(); }
+}
 
-function profile_views_api() { return views_views_api(); }
+if (!function_exists('profile_views_api')) {
+  function profile_views_api() { return views_views_api(); }
+}
 
-function search_views_api() { return views_views_api(); }
+if (!function_exists('search_views_api')) {
+  function search_views_api() { return views_views_api(); }
+}
 
-function statistics_views_api() { return views_views_api(); }
+if (!function_exists('statistics_views_api')) {
+  function statistics_views_api() { return views_views_api(); }
+}
 
-function system_views_api() { return views_views_api(); }
+if (!function_exists('system_views_api')) {
+  function system_views_api() { return views_views_api(); }
+}
 
-function taxonomy_views_api() { return views_views_api(); }
+if (!function_exists('taxonomy_views_api')) {
+  function taxonomy_views_api() { return views_views_api(); }
+}
 
-function translation_views_api() { return views_views_api(); }
+if (!function_exists('translation_views_api')) {
+  function translation_views_api() { return views_views_api(); }
+}
 
-function upload_views_api() { return views_views_api(); }
+if (!function_exists('upload_views_api')) {
+  function upload_views_api() { return views_views_api(); }
+}
 
-function user_views_api() { return views_views_api(); }
+if (!function_exists('user_views_api')) {
+  function user_views_api() { return views_views_api(); }
+}
 
-function contact_views_api() { return views_views_api(); }
+if (!function_exists('contact_views_api')) {
+  function contact_views_api() { return views_views_api(); }
+}

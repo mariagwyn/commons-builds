@@ -1,4 +1,3 @@
-// $Id: README.txt,v 1.7 2010/04/15 04:00:10 deekayen Exp $
 
 Password policy
 ==========================================

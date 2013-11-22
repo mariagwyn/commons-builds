@@ -122,24 +122,26 @@ function quant_get_quants() {
  */
 function _quant_get_time_from_url() {
   // Get the option
-  switch ($_GET['option']) {
-    case '':
-      return strtotime('-1 month');
-      
-    case 'custom':
-      $from = strtotime($_GET['from']);
-      $to = strtotime($_GET['to']);
-      if (is_numeric($from) && is_numeric($to)) {
-        // Move the 'to' date to 1 second before midnight
-        return array($from, $to + 86399);
-      }
-      break;
+  if (isset($_GET['options'])) {
+    switch ($_GET['option']) {
+      case 'custom':
+        $from = strtotime($_GET['from']);
+        $to = strtotime($_GET['to']);
+        if (is_numeric($from) && is_numeric($to)) {
+          // Move the 'to' date to 1 second before midnight
+          return array($from, $to + 86399);
+        }
+        break;
     
-    case 'period':
-      $period = strtotime('-' . str_replace('_', ' ', filter_xss($_GET['period'])));
-      if (is_numeric($period)) {
-        return $period; 
-      }
+      case 'period':
+        $period = strtotime('-' . str_replace('_', ' ', filter_xss($_GET['period'])));
+        if (is_numeric($period)) {
+          return $period; 
+        }
+    }
+  }
+  else {
+    return strtotime('-1 month');
   }
   
   return FALSE;
@@ -224,7 +226,7 @@ function quant_execute_query(&$quant) {
   // Extract the period of time
   $period = $quant->period;
   // Generate if a query wasn't supplied
-  if (!$quant->query) {
+  if (!isset($quant->query)) {
     // Generate a count query, if needed
     if ($quant->dataType == 'count') {
       $query = "SELECT COUNT({$quant->count}), {$quant->count} FROM {{$quant->table}}";

@@ -150,7 +150,7 @@ function _quant_generate_chart_count(&$quant) {
 function _quant_generate_chart_single(&$quant) {
   $max = 0; // Determine the highest available value on y-axis
   $interval = 0; // Counter to help break the x-axis label
-  $period = ceil(count($data) / 10); // Period when to break x-axis
+  $period = ceil(count($quant->data) / 10); // Period when to break x-axis
 
   foreach ($quant->data as $date => $value) {
     // Only show the X label every calculated period

@@ -417,6 +417,30 @@ function fbsmp_render_attachment($attachment) {
   return $output;
 }
 
+/**
+ * Returns an array of attachments of a specific plugin type.
+ *
+ * @param $attachment_type
+ *   The attachment type such as 'photo', 'link'.
+ *
+ * @return
+ *   The array containing the attahcment data for the matched statuses or 
+ *   FALSE if error.
+ */
+function fbsmp_get_attachments($attachment_type) {
+  if($attachment_type) {
+    $results = db_query("SELECT * FROM {fbsmp} WHERE type = '%s'", $attachment_type);
+    $records = array();
+    while ($record = db_fetch_array($results)) {
+      $record['data'] = unserialize($record['data']);
+      $records[] = $record;
+    }
+    
+    return $records;
+  }
+  return FALSE;
+}
+
 //===================
 // HELPER FUNCTIONS.
 //===================
@@ -546,6 +570,19 @@ function fbsmp_get_hooks($context_type = FALSE) {
  */
 function _fbsmp_status_can_edit($status, $delete = FALSE) {
   return facebook_status_user_access($delete ? 'delete' : 'edit', $status);
+}
+
+/**
+ * Determines if the current user can view the relevant status.
+ *
+ * @param $status
+ *   A status object to check for edit/delete permissions.
+ *
+ * @return
+ *   TRUE if the current user can view the status; FALSE otherwise.
+ */
+function fbsmp_status_can_view($status) {
+  return facebook_status_user_access('view', $status);
 }
 
 /**
@@ -761,6 +798,10 @@ function fbsmp_delete_confirm($form, &$form_state) {
   else {
     $form_state['redirect'] = 'user';
   }
+  
+  if (module_exists('modalframe')) {
+    modalframe_close_dialog();
+  }
 }
 
 /**
@@ -779,8 +820,8 @@ function fbsmp_form_facebook_status_edit_alter(&$form, &$form_state) {
         '#weight' => -25.1,
       );
       $form['fbsmp']['open'] = array(
-        '#value' => '<div class="fbsmp-edit-wrapper-outer"><div class="fbsmp-edit-text">'. t('Attachment:') .'</div><div class="fbsmp-edit-plugin-header fbsmp-edit-'. 
-                      $attachment->type .'-header">'. $name .'</div><div class="fbsmp-edit-form-box">',
+        '#value' => '<div class="fbsmp-edit-wrapper-outer"><span class="fbsmp-edit-text"></span>'.
+          '<h3 class="fbsmp-edit-plugin-header fbsmp-edit-'. $attachment->type .'-header">'. $name .'</h3><div class="fbsmp-edit-form-box">',
       );
       $form['fbsmp'] += $function($attachment, $form, $form_state);
       $form['fbsmp']['attachment'] = array(
@@ -847,9 +888,19 @@ function fbsmp_edit_status_submit(&$form, &$form_state) {
  * Implementation of hook_preprocess_facebook_status_item().
  */
 function fbsmp_preprocess_facebook_status_item(&$vars) {
-  $output = fbsmp_render_attachment($vars['status']->sid);
-  if ($output) {
-    $vars['attachment'] = $output;
+  $attachment = fbsmp_load($vars['status']->sid);
+  
+  if ($attachment) {
+    $vars['attachment-type'] = $attachment->type;
+    
+    $output = fbsmp_render_attachment($attachment);
+    if ($output) {
+      $vars['attachment'] = $output;
+    }
+    
+    if ($function = fbsmp_load_function($attachment->type, 'exported theme variables')) {
+      $vars = array_merge($vars, $function($attachment));
+    }
   }
 }
 
@@ -895,22 +946,22 @@ function fbsmp_form_facebook_status_box_alter(&$form, &$form_state) {
   if (!($ac_plugin = _fbsmp_get_active_plugin($form_state)) || !($widget_func = fbsmp_load_function($ac_plugin, $form_load))) {
     $form['fbsmp']['openiconlist'] = array(
       '#prefix' => '<div class="fbsmp-inner-collapsed">',
-      '#value' => '<span class="fbsmp-attach-text"></span><div class="fbsmp-icon-list clearfix">',
+      '#value' => '<div class="fbsmp-icon-list clearfix">',
     );
 
     foreach ($plugins as $key => $info) {
       $name = $info['name'] ? $info['name'] : $key;
       $form['fbsmp'][$key .'_icon'] = array(
         '#name' => $key,
-        '#type' => 'submit',
+        '#type' => 'image_button',
+        '#src' => $info['icon'],
         '#prefix' => '<div class="fbsmp-'. $key .'-icon fbsmp-plugin-icon">',
-        '#suffix' => '</div>',
+        '#suffix' => '<div class="fbsmp-plugin-tool-tip"><span class="fbsmp-plugin-tool-tip-text">'. $name .'</span></div></div>',
         '#submit' => array('fbsmp_activate_plugin'),
         '#validate' => array(),
-        '#value' => $name,
         '#attributes' => array(
           'alt' => $name,
-          'class' => 'fbsmp-'. $key . '-icon-button' . ' fbsmp-plugin-icon-button icon-button button'
+          'class' => 'fbsmp-'. $key . '-icon-button' . ' fbsmp-plugin-icon-button'
         ),
         '#ahah' => array(
           'path' => 'fbsmp/js',
@@ -1522,7 +1573,7 @@ function fbsmp_views_default_views_alter(&$views) {
       $view->display['default']->display_options['fields']['nothing'] = $nothing;
       // Add the Attachment token to the Global: Nothing field.
       $t = $view->display['default']->display_options['fields']['nothing']['alter']['text'];
-      $t = str_replace("[message]</div>", "[message]</div>\n\n<div>[attachment]</div>", $t);
+      $t = str_replace('[message]', "[message]\n    [attachment]", $t);
       $view->display['default']->display_options['fields']['nothing']['alter']['text'] = $t;
 
       // Replace the "no empty statuses" filter with the "no empty statuses with no attachment" filter.
@@ -1670,4 +1721,25 @@ function fbsmp_fbsmp_delete($status) {
       fbsmp_slideshare_fbsmp_delete($status);
       break;
   }
+}
+
+/**
+ * Implementation of hook_file_download().
+ */
+function fbsmp_file_download($file) {
+  $plugins = fbsmp_get_plugins();
+  $return = array();
+  foreach ($plugins as $plugin => $info) {
+    if ($plugin && $function = fbsmp_load_function($plugin, 'file download')) {
+      $result = $function($file);
+      if (isset($result) && is_array($result)) {
+        $return = array_merge_recursive($return, $result);
+      }
+      elseif (isset($result)) {
+        $return[] = $result;
+      }
+    }
+  }
+  
+  return $return;
 }

@@ -960,6 +960,7 @@ function _fbsmp_link_detect_charset(&$html_content) {
   if (function_exists('mb_detect_encoding')) {
     preg_match('~meta.*?charset=([-a-z0-9_]+)~i', $html_content, $charset);
     if ($charset[1]) {
+      $html_content = mb_convert_encoding($html_content, 'HTML-ENTITIES', $charset[1]);
       return FALSE;
     }
     

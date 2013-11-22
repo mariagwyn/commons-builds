@@ -34,27 +34,27 @@ function og_aggregator_menu() {
     'type' => MENU_NORMAL_ITEM,
   );
   $items['admin/og/aggregator/remove/%'] = array(
-    'title' => 'Remove items',
+    'title' => 'remove items',
     'description' => 'OG Aggregator',
     'page callback' => 'og_aggregator_admin_remove_feed',
     'page arguments' => array(4),
     'access arguments' => array('administer og_aggregator'),
     'type' => MENU_CALLBACK);
   $items['admin/og/aggregator/update/%'] = array(
-    'title' => 'Update items',
+    'title' => 'update items',
     'description' => 'OG Aggregator',
     'page callback' => 'og_aggregator_admin_refresh_feed',
     'page arguments' => array(4),
     'access arguments' => array('administer og_aggregator'),
     'type' => MENU_CALLBACK);
   $items['admin/og/aggregator/list'] = array(
-    'title' => 'List',
+    'title' => 'list',
     'type' => MENU_DEFAULT_LOCAL_TASK,
     'weight' => -10,
     'access arguments' => array('administer og_aggregator'),
   );
   $items['admin/og/aggregator/edit/feed/%'] = array(
-    'title' => 'Edit feed',
+    'title' => 'edit feed',
     'description' => 'OG Aggregator',
     'page callback' => 'og_aggregator_edit_feed',
     'page arguments' => array(5, NULL),
@@ -71,7 +71,7 @@ function og_aggregator_menu() {
    );
 
   $items['node/%node/aggregator'] = array(
-    'title' => 'Group RSS feed',
+    'title' => 'Group RSS Feed',
     'page callback' => 'og_aggregator_page',
     'page arguments' => array(1),
 
@@ -102,7 +102,7 @@ function og_aggregator_menu() {
   );
 
   $items['node/%node/aggregator/add'] = array(
-    'title' => 'Add RSS feed',
+    'title' => 'Add RSS Feed',
     'page callback' => 'og_aggregator_add_feed',
     'page arguments' => array(null, 1),
     'access callback' => 'og_aggregator_access',
@@ -112,21 +112,21 @@ function og_aggregator_menu() {
   );
 
   $items['node/%node/aggregator/remove'] = array(
-    'title' => 'Remove items',
+    'title' => 'remove items',
     'page callback' => 'og_aggregator_remove_feed',
     'access callback' => 'og_aggregator_access',
     'access arguments' => array('group update', 1),
     'type' => MENU_CALLBACK,
   );
   $items['node/%node/aggregator/update'] = array(
-    'title' => 'Update items',
+    'title' => 'update items',
     'page callback' => 'og_aggregator_refresh_feed',
     'access callback' => 'og_aggregator_access',
     'access arguments' => array('group update', 1),
     'type' => MENU_CALLBACK,
   );
   $items['node/%node/aggregator/edit'] = array(
-    'title' => 'Edit feed',
+    'title' => 'edit feed',
     'page callback' => 'og_aggregator_edit_feed',
     'page arguments' => array(4, 1),
     'access callback' => 'og_aggregator_access',
@@ -187,22 +187,14 @@ function og_aggregator_block($op, $delta = 0, $edit = array()) {
         $result = db_query_range("SELECT i.* FROM {og_aggregator_item} i JOIN {og_aggregator_feed} f ON i.fid = f.fid WHERE f.nid = %d ORDER BY i.timestamp desc", $groupnode->nid, 0, variable_get('og_aggregator_block_items_number',10));
         $block['content'] = '<div class="more-link">'. 
 l(t('more'), "node/$groupnode->nid/aggregator/feed", array('title' => t('View this feed\'s recent news.'))) .'</div>';
-      
-        $items = array();
-        while ($item = db_fetch_object($result)) {
-          $items[] = theme('og_aggregator_block_item', $item);
-        }
-        
-        // If no items are available, don't return a block
-        if (empty($items)) {
-          return NULL;
-        }
-        
-        $block['content'] = theme('item_list', $items) . $block['content'];
-     
-        return $block;
       }
+      $items = array();
+      while ($item = db_fetch_object($result)) {
+        $items[] = theme('og_aggregator_block_item', $item);
+      }
+      $block['content'] = theme('item_list', $items) . $block['content'];
     }
+    return $block;
   }
 }
 
@@ -314,7 +306,7 @@ function og_aggregator_form_feed_submit($form, &$form_state) {
     unset($form_state['values']['title']);
   }
   og_aggregator_save_feed($form_state['values']);
-  
+  menu_rebuild();
   if (isset($form_state['values']['fid'])) {
     if (isset($form_state['values']['title'])) {
       drupal_set_message(t('The feed %feed has been updated.', array('%feed' => $form_state['values']['title'])));
@@ -322,7 +314,7 @@ function og_aggregator_form_feed_submit($form, &$form_state) {
         $form_state['redirect'] = 'admin/og/aggregator/';
       }
       else {
-        $form_state['redirect'] = 'node/'.$form_state['values']['og_id'].'/aggregator';
+    $form_state['redirect'] = 'node/'.$form_state['values']['og_id'].'/feed';
       }
     }
     else {
@@ -332,7 +324,7 @@ function og_aggregator_form_feed_submit($form, &$form_state) {
         $form_state['redirect'] = 'admin/og/aggregator/';
       }
       else {
-        $form_state['redirect'] = 'node/'.$form_state['values']['og_id'].'/aggregator';
+        $form_state['redirect'] = 'node/'.$form_state['values']['og_id'].'/feed';
       }
     }
   }
@@ -340,8 +332,6 @@ function og_aggregator_form_feed_submit($form, &$form_state) {
     watchdog('og_aggregator', 'Feed %feed added.', array('%feed' => $form_state['values']['title']), WATCHDOG_NOTICE, l(t('view'), 'admin/aggregator'));
     drupal_set_message(t('The feed %feed has been added.', array('%feed' => $form_state['values']['title'])));
   }
-  
-  menu_rebuild();
 }
 
 /**

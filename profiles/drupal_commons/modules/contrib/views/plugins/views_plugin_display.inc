@@ -1,5 +1,4 @@
 <?php
-// $Id: views_plugin_display.inc,v 1.27.2.13 2010/06/17 02:46:53 merlinofchaos Exp $
 /**
  * @file
  * Contains the base display plugin.
@@ -40,7 +39,23 @@ class views_plugin_display extends views_plugin {
       unset($options['defaults']);
     }
 
-    $this->unpack_options($this->options, $options);
+    // Cache for unpack_options.
+    static $unpack_options = array();
+    $cid = 'unpack_options:' . md5(serialize(array($this->options, $options)));
+    if (empty($unpack_options[$cid])) {
+      $cache = views_cache_get($cid, TRUE);
+      if (!empty($cache->data)) {
+        $this->options = $cache->data;
+      }
+      else {
+        $this->unpack_options($this->options, $options);
+        views_cache_set($cid, $this->options, TRUE);
+      }
+      $unpack_options[$cid] = $this->options;
+    }
+    else {
+      $this->options = $unpack_options[$cid];
+    }
   }
 
   function destroy() {
@@ -71,9 +86,9 @@ class views_plugin_display extends views_plugin {
    */
   function uses_exposed() {
     if (!isset($this->has_exposed)) {
-      foreach ($this->handlers as $type => $value) {
-        foreach ($this->view->$type as $id => $handler) {
-          if ($handler->can_expose() && $handler->is_exposed()) {
+      foreach (array('field', 'filter') as $type) {
+        foreach ($this->view->$type as $key => $handler) {
+          if ($handler->is_exposed()) {
             // one is all we need; if we find it, return true.
             $this->has_exposed = TRUE;
             return TRUE;
@@ -984,7 +999,6 @@ class views_plugin_display extends views_plugin {
           '#description' => t("This will display the more link even if there are no more items to display."),
           '#default_value' => $this->get_option('use_more_always'),
         );
-        $form['#title'] .= t('Text to use for the more link.');
         $form['use_more_text'] = array(
           '#type' => 'textfield',
           '#title' => t('More link text'),
@@ -1478,6 +1492,11 @@ class views_plugin_display extends views_plugin {
    */
   function options_validate(&$form, &$form_state) {
     switch ($form_state['section']) {
+      case 'display_title':
+        if (empty($form_state['values']['display_title'])) {
+          form_error($form['display_title'], t('Display title may not be empty.'));
+        }
+        break;
       case 'css_class':
         $css_class = $form_state['values']['css_class'];
         if (preg_match('/[^a-zA-Z0-9- ]/', $css_class)) {
@@ -1860,7 +1879,7 @@ class views_plugin_display extends views_plugin {
     $this->view->set_pager_element($this->get_option('pager_element'));
     $this->view->set_items_per_page($this->get_option('items_per_page'));
     $this->view->set_offset($this->get_option('offset'));
-    if ($this->use_more()) {
+    if ($this->use_more() && !$this->use_more_always()) {
       $this->view->get_total_rows = TRUE;
     }
   }
@@ -1962,6 +1981,7 @@ class views_plugin_display extends views_plugin {
     return array(
       $delta => array(
         'info' => $desc,
+        'cache' => BLOCK_NO_CACHE,
       )
     );
   }

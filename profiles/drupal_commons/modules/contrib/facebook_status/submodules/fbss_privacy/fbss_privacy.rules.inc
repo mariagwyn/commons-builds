@@ -1,5 +1,4 @@
 <?php
-// $Id$
 
 /**
  * @file
@@ -12,9 +11,12 @@
 function fbss_privacy_rules_condition_info() {
   return array(
     'fbss_privacy_is_private' => array(
-      'label' => t('Status was posted as private'),
+      'label' => t('Status is private'),
       'arguments' => array(
-        'status' => array('type' => 'facebook_status', 'label' => t('The status')),
+        'status' => array(
+          'type' => 'facebook_status',
+          'label' => t('The status')
+        ),
       ),
       'module' => 'Facebook-style Statuses',
     ),
@@ -27,4 +29,3 @@ function fbss_privacy_rules_condition_info() {
 function fbss_privacy_is_private($status) {
   return !empty($status->private);
 }
-

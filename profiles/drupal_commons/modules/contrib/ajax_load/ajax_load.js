@@ -1,4 +1,4 @@
-// $Id: ajax_load.js,v 1.14 2010/12/02 20:19:22 markuspetrux Exp $
+// $Id$
 
 (function ($) {
 

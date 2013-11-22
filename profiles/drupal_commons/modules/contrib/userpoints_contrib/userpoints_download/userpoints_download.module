@@ -1,5 +1,5 @@
 <?php
-// $Id: userpoints_download.module,v 1.1.2.1 2010/03/28 15:02:54 kbahey Exp $
+// $Id$
 
 define('USERPOINTS_DOWNLOAD_POINTS',     'userpoints_download_points');
 define('USERPOINTS_DOWNLOAD_TID',        'userpoints_download_tid');

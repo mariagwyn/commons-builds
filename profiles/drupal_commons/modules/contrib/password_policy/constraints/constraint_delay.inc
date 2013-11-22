@@ -1,5 +1,4 @@
 <?php
-// $Id: constraint_delay.inc,v 1.4 2009/06/04 21:48:39 deekayen Exp $
 
 /**
  * @file

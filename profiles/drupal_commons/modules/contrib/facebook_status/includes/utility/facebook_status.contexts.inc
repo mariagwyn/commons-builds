@@ -33,7 +33,11 @@ class facebook_status_context {
    * Returns an object representing the recipient, determined automatically.
    */
   function find_recipient() {
-    return $this->is_applicable() ? menu_get_object($this->type()) : new stdClass();
+    $obj = menu_get_object($this->type());
+    if (empty($obj) && is_numeric(arg(1)) && function_exists($this->type() .'_load')) {
+      $obj = call_user_func($this->type() .'_load', arg(1));
+    }
+    return $this->is_applicable() ? $obj : new stdClass();
   }
 
   /**
@@ -225,7 +229,11 @@ class facebook_status_og_context extends facebook_status_node_context {
     return !(empty($g_ctx));
   }
   function find_recipient() {
-    return $this->is_applicable() ? menu_get_object() : new stdClass();
+    $obj = menu_get_object();
+    if (empty($obj) && is_numeric(arg(1))) {
+      $obj = node_load(arg(1));
+    }
+    return $this->is_applicable() ? $obj : new stdClass();
   }
   function load_recipient($id) {
     return node_load($id);
@@ -312,11 +320,14 @@ class facebook_status_domain_context extends facebook_status_context {
     }
     return 0;
   }
+  function load_recipient($id) {
+    return module_exists('fbss_domain') ? domain_load($id) : 0;
+  }
   function load_random_recipient() {
     return 0;
   }
   function recipient_id($recipient) {
-    return isset($recipient['domain_id']) ? $recipient['domain_id'] : 0;
+    return is_array($recipient) && isset($recipient['domain_id']) ? $recipient['domain_id'] : 0;
   }
   function recipient_url($recipient) {
     if (module_exists('fbss_domain')) {

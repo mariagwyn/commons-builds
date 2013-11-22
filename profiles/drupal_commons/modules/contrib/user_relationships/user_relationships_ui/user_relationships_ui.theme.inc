@@ -1,5 +1,4 @@
 <?php
-// $Id: user_relationships_ui.theme.inc,v 1.1.2.11 2010/02/23 22:45:38 alexk Exp $
 
 /**
  * @file
@@ -49,21 +48,16 @@ function theme_user_relationships_request_relationship_direct_link($relate_to, $
 /**
  * Remove relationship link
  */
-function theme_user_relationships_remove_link($viewer, $relationship) {
-  $link = l(
+function theme_user_relationships_remove_link($uid, $rid) {
+  return l(
     t('Remove'),
-    "user/{$viewer->uid}/relationships/{$relationship->rid}/remove",
+    "user/{$uid}/relationships/{$rid}/remove",
     array(
       'title' => array('title' => t('Remove')),
       'query' => drupal_get_destination(),
       'attributes' => array('class' => 'user_relationships_popup_link'),
     )
   );
-
-  return t('%relationship_name (!remove_link)', array(
-    '%relationship_name'  => ur_tt("user_relationships:rtid:$relationship->rtid:name", $relationship->name) . ($relationship->is_oneway ? ($relationship->requester_id == $viewer->uid ? t(' (You to Them)') : t(' (Them to You)')) : NULL),
-    '!remove_link'        => $link
-  ));
 }
 
 /**

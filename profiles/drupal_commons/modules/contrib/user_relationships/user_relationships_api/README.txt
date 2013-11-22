@@ -1,5 +1,3 @@
-$Id: README.txt,v 1.1.2.7 2009/07/10 07:27:49 alexk Exp $
-
 User Relationships API
 ------------------
 This the API only portion of User Relationships. This is required by all UR plugins and addon
@@ -48,3 +46,10 @@ need to see the documentation in that file for a deeper explanaition.
     approve     | After approving a relationship
     disapprove  | When a relationship has been removed (specifically disapproved)
     remove      | When a relationship has been removed
+
+  hook_user_relationships_remove_link_alter($list, $args)
+    $list | The list of remove links being presented to the user.
+    $args | An array of the arguments passed to
+      _user_relationships_ui_actions_between(), as well as $relationships, an
+      array of relationship objects as returned by user_relationships_load().  
+  

@@ -28,7 +28,7 @@ class fbsmp_views_handler_field_themed_attachment extends views_handler_field {
     $attachment->data = unserialize($values->{$this->aliases['data']});
     $themed_attachment = fbsmp_render_attachment($attachment);
     if ($themed_attachment) {
-      return '<span class="fbss_attachment">'. $themed_attachment . '</span>';
+      return '<div class="fbsmp clearfix fbss_attachment">'. $themed_attachment . '</div>'; // The fbss_attachment class is for backwards compatibility
     }
     return '';
   }

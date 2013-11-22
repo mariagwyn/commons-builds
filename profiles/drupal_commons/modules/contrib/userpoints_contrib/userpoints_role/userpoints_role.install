@@ -1,6 +1,6 @@
 <?php
 
-// $Id: userpoints_role.install,v 1.1.2.4 2008/12/29 17:19:40 kbahey Exp $
+// $Id$
 
 function userpoints_role_uninstall() {
   db_query("DELETE FROM {variable} WHERE name LIKE 'userpoints_role%%'");

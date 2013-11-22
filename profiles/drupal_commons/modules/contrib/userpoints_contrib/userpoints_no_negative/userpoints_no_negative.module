@@ -1,5 +1,5 @@
 <?php
-// $Id: userpoints_no_negative.module,v 1.1.4.5 2009/01/19 14:07:03 kbahey Exp $ 
+// $Id$ 
 
 // @file
 // Very simple userpoints_contrib to prevent accounts from going (further) negative

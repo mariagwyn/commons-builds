@@ -1,5 +1,5 @@
 <?php
-// $Id: userpoints_commentspertype.module,v 1.1.2.1 2009/07/31 15:56:42 kbahey Exp $
+// $Id$
 
 define('USERPOINTS_MAX_COMMENT_POINTS', 'userpoints_max_comment_points');
 

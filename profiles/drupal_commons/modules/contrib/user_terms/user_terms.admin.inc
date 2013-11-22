@@ -1,5 +1,4 @@
 <?php
-// $Id: user_terms.admin.inc,v 1.1.2.1 2010/01/16 15:01:06 joachim Exp $
 
 /**
  * @file
@@ -13,42 +12,51 @@
  *   The form elements.
  */
 function user_terms_settings() {
+  drupal_add_js(drupal_get_path('module', 'user_terms') . '/user_terms.js', 'module');
   $form = array();
   $vocabs = taxonomy_get_vocabularies();
+  $vocabs_enabled   = variable_get('user_terms_vocabs', array());
+  $vocabs_path      = variable_get('user_terms_vocabs_path', array());
+  $vocabs_register  = variable_get('user_terms_vocabs_register', array());
 
-  foreach ($vocabs as $vid => $voc) {
-    $options[$vid] = $voc->name;
-  }
+  $profile_exists = module_exists('profile');
 
-  $form['user_terms_vocabs'] = array(
-    '#type'          => 'select',
-    '#title'         => t('User vocabularies'),
-    '#options'       => $options,
-    '#description'   => t('Choose the vocabularies that will be used to tag users. To select multiple values, hold down the Control key while clicking. If you are using an Apple, hold down the Apple or Command key.'),
-    '#default_value' => variable_get('user_terms_vocabs', ''),
-    '#multiple'      => TRUE,
-  );
-
-  // Only add this option if the profile module is enabled.
-  if (module_exists('profile')) {
-    $data    = profile_categories();
-    $options = array(
+  if ($profile_exists) {
+    $categories = profile_categories();
+    $category_options = array(
       'account' => t('Account (main page)'),
     );
-
-    foreach ($data as $datum) {
-      $options[$datum['name']] = $datum['name'];
+    foreach ($categories as $cat) {
+      // Profile categories have no machine name; title and name fields are
+      // identical. We can't use the index as their order may change.
+      $category_options[$cat['name']] = $cat['name'];
     }
-
-    $form['user_terms_profile_path'] = array(
-      '#type'           => 'select',
-      '#title'          => t('Profile page'),
-      '#options'        => $options,
-      '#description'    => t('The profile category on which vocabularies should appear when the user is editing their profile.'),
-      '#default_value'  => variable_get('user_terms_profile_path', 'account'),
-    );
   }
 
+  foreach ($vocabs as $vid => $voc) {
+    $form['vocabularies'][$vid]['name'] = array('#value' => check_plain($voc->name));
+    $form['vocabularies'][$vid]['enabled'] = array(
+      '#type'           => 'checkbox', 
+      '#default_value'  => isset($vocabs_enabled[$vid]), 
+      '#attributes'     => array('class' => 'enabled'),
+    );
+    // Only add this option if the profile module is enabled.
+    if ($profile_exists) {
+      $form['vocabularies'][$vid]['category'] = array(
+        '#type' => 'select', 
+        '#options' => $category_options,
+        '#default_value' => isset($vocabs_path[$vid]) ? $vocabs_path[$vid] : 'account',
+      );
+    }
+    $form['vocabularies'][$vid]['registration'] = array(
+      '#type'           => 'checkbox',
+      '#default_value'  => isset($vocabs_register[$vid]),
+      '#attributes'     => array('class' => 'registration'),
+    );
+  } 
+  $form['vocabularies']['#tree'] = TRUE;
+  $form['vocabularies']['#theme'] = 'user_terms_settings';
+  
   $form['user_terms_group'] = array(
     '#type'         => 'fieldset',
     '#title'        => t('Group terms'),
@@ -70,5 +78,87 @@ function user_terms_settings() {
       '#size'           => 32,
     );
 
+  // Add our own submit handler to process the table. 
+  $form['#submit'] = array('user_terms_settings_submit');
+
   return system_settings_form($form);
+}
+
+/**
+ * Theme the admin settings form.
+ *
+ * @ingroup themeable
+ * @see user_terms_settings()
+ */
+function theme_user_terms_settings($form) {
+  $profile_exists = module_exists('profile');
+
+  $rows = array();
+  foreach (element_children($form) as $key) {
+    $field = &$form[$key];
+
+    $row = array();
+    $row[] = drupal_render($field['name']);
+    $row[] = drupal_render($field['enabled']);
+    if ($profile_exists) {
+      $row[] = drupal_render($field['category']);
+    }
+    $row[] = drupal_render($field['registration']);
+
+    $rows[] = $row;
+  }
+
+  if (empty($rows)) {
+    $rows[] = array(array('data' => t('No vocabularies available.'), 'colspan' => 3));
+  }
+
+  $header[] = t('Vocabulary'); 
+  $header[] = t('Enabled'); 
+  if ($profile_exists) {
+    $header[] = t('Profile category');
+  }
+  $header[] = t('Use on registration'); 
+
+  $output = theme('table', $header, $rows, array('id' => 'user-terms-fields'));
+  $output .= drupal_render($form);
+
+  return $output;
+}
+
+/**
+ * Submit handler for the admin settings form.
+ *
+ * Handles the table of vocabularies.
+ * Other settings that are simple elements are saved by system_settings_form()'s
+ * system_settings_form_submit handler.
+ */
+function user_terms_settings_submit($form, &$form_state) {
+  // Save the enabled vocabularies.
+  $user_terms_vocabs = array();
+  foreach ($form_state['values']['vocabularies'] as $vid => $vocab_values) {
+    // Enabled vocabularies.
+    if ($vocab_values['enabled']) {
+      $user_terms_vocabs[$vid] = $vid;
+    }
+    // Registration vocabularies.
+    if ($vocab_values['registration']) {
+      $user_terms_vocabs_register[$vid] = $vid;
+    }
+    // Vocabulary categories.
+    if (isset($vocab_values['category'])) {
+      $user_terms_vocabs_path[$vid] = $vocab_values['category'];
+    }
+    elseif ($vocab_values['enabled']) {
+      // There was no 'category' form item because profile module is not present
+      // so set the path to 'account' if the vocab is enabled.
+      $user_terms_vocabs_path[$vid] = 'account';
+    }
+  }
+  variable_set('user_terms_vocabs', $user_terms_vocabs);
+  variable_set('user_terms_vocabs_register', $user_terms_vocabs_register);
+  
+  variable_set('user_terms_vocabs_path', $user_terms_vocabs_path);
+
+  // Remove the form values so system_settings_form_submit() doesn't save them.
+  unset($form_state['values']['vocabularies']);
 }

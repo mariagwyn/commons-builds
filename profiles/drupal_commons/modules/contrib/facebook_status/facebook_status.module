@@ -314,7 +314,7 @@ function facebook_status_link($type, $status) {
     );
   }
   // If not self update by current user (because if it is a self update by the current user, there is no need for a response)
-  if ($status->type == 'user' && ($status->recipient != $status->sender || $status->sender != $user->uid)) {
+  if (!module_exists('fbss_comments') && $status->type == 'user' && ($status->recipient != $status->sender || $status->sender != $user->uid)) {
     // If permission to respond
     if (facebook_status_user_access('add', _facebook_status_user_load($status->sender), 'user', $user)) {
       $second_uid = $user->uid;
@@ -423,6 +423,9 @@ function facebook_status_show($status, $options = array()) {
 function theme_facebook_status_time($time) {
   if (!$time) {
     return FALSE;
+  }
+  if (module_exists('timeago')) {
+    return timeago_format_date($time);
   }
   if (time() - $time < 60) {
     return t('a moment ago');
@@ -552,7 +555,11 @@ function facebook_status_has_status($recipient_id = NULL, $type = 'user', $sende
  *   A status object containing sid, sender, recipient, type, created, message.
  */
 function facebook_status_load($sid) {
-  return db_fetch_object(db_query("SELECT * FROM {facebook_status} WHERE sid = %d", $sid));
+  static $statuses = array();
+  if (!isset($statuses[$sid])) {
+    $statuses[$sid] = db_fetch_object(db_query("SELECT * FROM {facebook_status} WHERE sid = %d", $sid));
+  }
+  return $statuses[$sid];
 }
 
 /**
@@ -772,10 +779,8 @@ function facebook_status_save_status($recipient, $type, $message, $sender = NULL
     'sender' => $sender->uid,
     'recipient' => $recipient_id,
     'type' => $type,
+    'private' => isset($options['form_state']['values']['private']) ? $options['form_state']['values']['private'] : 0,
   );
-  if (isset($options['form_state']) && module_exists('fbss_privacy') && !empty($options['form_state']['values']['private'])) {
-    $object->private = $options['form_state']['values']['private'];
-  }
   if ($message != $status->message || $type != $status->type || $recipient_id != $status->recipient || !$options['discard duplicates']) {
     $edit = FALSE;
     // If a new status is submitted on one's own profile within
@@ -807,7 +812,7 @@ function facebook_status_save_status($recipient, $type, $message, $sender = NULL
       module_invoke_all('facebook_status', 'fbss_submitted', $object, $context);
     }
   }
-  elseif ($message == $status->status) {
+  elseif ($message == $status->message) {
     $object->sid = $status->sid;
   }
   return $object;
@@ -1010,7 +1015,7 @@ function facebook_status_facebook_status_context_info() {
       'description' => t('If a profile is currently being viewed, then the stream belongs to the owner of that profile.') .' '.
         t('Otherwise, the stream belongs to the current user.'),
       'handler' => 'facebook_status_user_context',
-      'view' => module_exists('activity_log') ? 'activity_log_stream' : (module_exists('user_relationships_api') ? 'fbss_ur_stream' : 'facebook_status_stream'),
+      'view' => module_exists('activity_log') ? 'activity_log_stream' : (module_exists('user_relationship_views') ? 'fbss_ur_stream' : 'facebook_status_stream'),
       'weight' => 999,
       'file' => $path .'/includes/utility/facebook_status.contexts.inc',
     ),
@@ -1225,8 +1230,8 @@ function facebook_status_token_values($type, $data = NULL, $options = array()) {
     'status-url' => $url,
     'status-edit' => $edit,
     'status-delete' => $delete,
-    'status-comment-count' => (module_exists('fbss_comments')) ? fbss_comments_count_comments($status->sid) : 0,
-    'comments-email' => theme('fbss_comments_items_email', fbss_comments_get_comments($sid, TRUE), $url),
+    'status-comment-count' => module_exists('fbss_comments') ? fbss_comments_count_comments($status->sid) : 0,
+    'comments-email' => module_exists('fbss_comments') ? theme('fbss_comments_items_email', fbss_comments_get_comments($status->sid, TRUE), $url) : '',
     'created' => format_date($status->created, 'small'),
   );
   $values += token_get_date_token_values($status->created, 'created-');
