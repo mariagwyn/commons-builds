@@ -11,6 +11,3 @@
   <?php print theme('block', $block); ?>
 <?php endforeach; ?>
 <?php endif; ?>
-<?php if (!empty($content)): ?>
-  <?php print $content; ?>
-<?php endif; ?>
