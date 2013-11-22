@@ -7,6 +7,7 @@ core = 6.x
 engine = phptemplate
 
 stylesheets[all][] = css/commons_origins-style.css
+scripts[] = js/commons_origins.js
 
 regions[sidebar_first] = sidebar first
 regions[sidebar_last] = sidebar last
@@ -43,9 +44,9 @@ settings[sidebar_layout] = sidebars-split
 settings[sidebar_first_width] = 4
 settings[sidebar_last_width] = 5
 
-; Information added by drupal.org packaging script on 2012-01-18
-version = "6.x-2.4"
+; Information added by drupal.org packaging script on 2012-02-14
+version = "6.x-2.5"
 core = "6.x"
 project = "commons"
-datestamp = "1326924940"
+datestamp = "1329191737"
 

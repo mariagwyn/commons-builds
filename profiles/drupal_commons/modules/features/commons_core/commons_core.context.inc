@@ -5,6 +5,7 @@
  */
 function commons_core_context_default_contexts() {
   $export = array();
+
   $context = new stdClass;
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
@@ -37,8 +38,8 @@ function commons_core_context_default_contexts() {
   // Included for use with string extractors like potx.
   t('Bookmarks');
   t('The bookmarks page');
-
   $export['bookmarks'] = $context;
+
   $context = new stdClass;
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
@@ -82,8 +83,8 @@ function commons_core_context_default_contexts() {
   // Included for use with string extractors like potx.
   t('Show on every page');
   t('Sitewide');
-
   $export['global'] = $context;
+
   $context = new stdClass;
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
@@ -107,7 +108,31 @@ function commons_core_context_default_contexts() {
           'module' => 'commons_core',
           'delta' => 'group_create_content',
           'region' => 'sidebar_last',
-          'weight' => -1,
+          'weight' => -5,
+        ),
+        'commons_core-group_menu' => array(
+          'module' => 'commons_core',
+          'delta' => 'group_menu',
+          'region' => 'sidebar_last',
+          'weight' => 1,
+        ),
+        'views-24dcb59a56254e5a470ee2f23590eed2' => array(
+          'module' => 'views',
+          'delta' => '24dcb59a56254e5a470ee2f23590eed2',
+          'region' => 'sidebar_last',
+          'weight' => 2,
+        ),
+        'views-bookmarks_your_group-block_1' => array(
+          'module' => 'views',
+          'delta' => 'bookmarks_your_group-block_1',
+          'region' => 'sidebar_last',
+          'weight' => 3,
+        ),
+        'commons_core-group_members' => array(
+          'module' => 'commons_core',
+          'delta' => 'group_members',
+          'region' => 'sidebar_last',
+          'weight' => 4,
         ),
       ),
     ),
@@ -118,8 +143,8 @@ function commons_core_context_default_contexts() {
   // Included for use with string extractors like potx.
   t('Group');
   t('The context of a group');
-
   $export['group-context'] = $context;
+
   $context = new stdClass;
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
@@ -139,32 +164,15 @@ function commons_core_context_default_contexts() {
   $context->reactions = array(
     'block' => array(
       'blocks' => array(
-        'commons_core-group_menu' => array(
-          'module' => 'commons_core',
-          'delta' => 'group_menu',
-          'region' => 'sidebar_last',
-          'weight' => 0,
-        ),
-        'commons_core-group_members' => array(
-          'module' => 'commons_core',
-          'delta' => 'group_members',
-          'region' => 'sidebar_last',
-          'weight' => 1,
-        ),
-        'views-24dcb59a56254e5a470ee2f23590eed2' => array(
+        'views-group_tab_content-block_1' => array(
           'module' => 'views',
-          'delta' => '24dcb59a56254e5a470ee2f23590eed2',
-          'region' => 'sidebar_last',
-          'weight' => 3,
-        ),
-        'views-group_node-block_1' => array(
-          'module' => 'views',
-          'delta' => 'group_node-block_1',
+          'delta' => 'group_tab_content-block_1',
           'region' => 'content',
           'weight' => 0,
         ),
       ),
     ),
+    'breadcrumb' => 'groups',
   );
   $context->condition_mode = 0;
 
@@ -172,8 +180,8 @@ function commons_core_context_default_contexts() {
   // Included for use with string extractors like potx.
   t('Group');
   t('The group home page');
-
   $export['group-home'] = $context;
+
   $context = new stdClass;
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
@@ -230,8 +238,8 @@ function commons_core_context_default_contexts() {
   // Translatables
   // Included for use with string extractors like potx.
   t('The list of available groups on the site');
-
   $export['group-listing'] = $context;
+
   $context = new stdClass;
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
@@ -274,8 +282,8 @@ function commons_core_context_default_contexts() {
   // Translatables
   // Included for use with string extractors like potx.
   t('A listing of your groups');
-
   $export['group-listing-mine'] = $context;
+
   $context = new stdClass;
   $context->disabled = FALSE; /* Edit this to true to make a default context disabled initially */
   $context->api_version = 3;
@@ -321,7 +329,7 @@ function commons_core_context_default_contexts() {
   // Included for use with string extractors like potx.
   t('Notice listing and nodes');
   t('Notices');
-
   $export['notices'] = $context;
+
   return $export;
 }

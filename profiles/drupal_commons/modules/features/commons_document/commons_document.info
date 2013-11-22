@@ -58,9 +58,9 @@ features[views_api][] = "api:2"
 name = "Commons Document"
 package = "Commons"
 
-; Information added by drupal.org packaging script on 2012-01-18
-version = "6.x-2.4"
+; Information added by drupal.org packaging script on 2012-02-14
+version = "6.x-2.5"
 core = "6.x"
 project = "commons"
-datestamp = "1326924940"
+datestamp = "1329191737"
 

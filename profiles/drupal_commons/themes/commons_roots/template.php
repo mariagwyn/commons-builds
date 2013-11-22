@@ -1,5 +1,4 @@
 <?php
-// $Id: template.php 8021 2010-10-19 13:01:34Z sheena $
 
 /**
  * Breadcrumb themeing
@@ -32,6 +31,8 @@ function commons_roots_preprocess_node(&$vars) {
     $submitted .= '<span class="submitted-by">';
     $submitted .= t('Submitted by !name', array('!name' => theme('username', $author)));
     $submitted .= '</span>';
+    
+    $vars['submitted_name'] = theme('username', $author);
     
     // User points
     if ($author->uid && module_exists('userpoints')) {
@@ -152,7 +153,7 @@ function commons_roots_shoutbox_post($shout, $links = array(), $alter_row_color=
   if ($links) {
     foreach ($links as $link) {
       $linkattributes = $link['linkattributes'];
-      $link_html = '<img src="'. $link['img'] .'"  width="'. $link['img_width'] .'" height="'. $link['img_height'] .'" alt="'. $link['title'] .'" class="shoutbox-imglink"/>';
+      $link_html = '<img src="'. $link['img'] .'" alt="'. $link['title'] .'" class="shoutbox-imglink"/>';
       $link_url = 'shout/'. $shout->shout_id .'/'. $link['action'];
       $img_links = l($link_html, $link_url, array('html' => TRUE, 'query' => array('destination' => drupal_get_path_alias($_GET['q'])))) . $img_links;
     }

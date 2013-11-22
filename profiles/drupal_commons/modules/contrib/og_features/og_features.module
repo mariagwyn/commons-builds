@@ -561,10 +561,11 @@ function og_features_get_registry($feature = NULL, $reset = FALSE) {
  *   A group object taken by reference
  */
 function og_features_load_disabled_features(&$group) {
-  static $disabled;
+  static $disabled = array();
   
   // Regenerate the disabled features list, if needed
   if (!isset($disabled[$group->nid])) {
+    $disabled[$group->nid] = array();
     $sql = "SELECT settings FROM {og_features} WHERE nid = %d";
     $result = db_result(db_query($sql, $group->nid));
     $features = $result ? unserialize($result) : array();

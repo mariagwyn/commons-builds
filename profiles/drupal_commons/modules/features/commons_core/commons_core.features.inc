@@ -59,29 +59,6 @@ function commons_core_imagecache_default_presets() {
             'upscale' => 0,
           ),
         ),
-        '1' => array(
-          'weight' => '0',
-          'module' => 'imagecache_canvasactions',
-          'action' => 'canvasactions_definecanvas',
-          'data' => array(
-            'RGB' => array(
-              'HEX' => '',
-            ),
-            'under' => 1,
-            'exact' => array(
-              'width' => '380',
-              'height' => '90',
-              'xpos' => 'left',
-              'ypos' => 'top',
-            ),
-            'relative' => array(
-              'leftdiff' => '',
-              'rightdiff' => '',
-              'topdiff' => '',
-              'bottomdiff' => '',
-            ),
-          ),
-        ),
       ),
     ),
     'group_images_featured' => array(
@@ -222,8 +199,8 @@ function commons_core_imagecache_default_presets() {
           'module' => 'imagecache',
           'action' => 'imagecache_scale_and_crop',
           'data' => array(
-            'width' => '30',
-            'height' => '30',
+            'width' => '50',
+            'height' => '50',
           ),
         ),
       ),

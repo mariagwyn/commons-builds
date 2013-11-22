@@ -70,6 +70,12 @@ function drupal_commons_features_form(&$form_state, $url) {
     '#default_value' => 1,
     '#description' => st('Used to create threaded topical discussions within a group.'),
   );
+  $form['content']['feature-commons_answers'] = array(
+    '#type' => 'checkbox',
+    '#title' => st('Answers'),
+    '#default_value' => 1,
+    '#description' => t('Allows users to submit questions and answers, and vote for the best answer.'),
+  );
   $form['content']['feature-commons_document'] = array(
     '#type' => 'checkbox',
     '#title' => st('Documents'),
@@ -159,8 +165,8 @@ function drupal_commons_features_form(&$form_state, $url) {
   $form['acquia']['feature-acquia_network_subscription'] = array(
     '#type' => 'checkbox',
     '#title' => st('Acquia Network'),
-    '#default_value' => 0,
-    '#description' => st('Select this either if you wish to try a free trial of the Acquia Network or want to enter the keys for your existing Acquia Network subscription.'),
+    '#default_value' => 1,
+    '#description' => st('Leave this enabled to use the Acquia Network with your existing subscription or with a free 30 day trial.'),
   );
   
   // Redirect URL to remain inside the installation after submission

@@ -5,9 +5,9 @@ dependencies[] = "og"
 core = 6.x
 
 
-; Information added by drupal.org packaging script on 2011-10-05
-version = "6.x-1.2"
+; Information added by drupal.org packaging script on 2011-10-20
+version = "6.x-1.x-dev"
 core = "6.x"
 project = "og_features"
-datestamp = "1317842207"
+datestamp = "1319070429"
 

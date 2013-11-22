@@ -17,10 +17,46 @@ projects[acquia_search][download][type] = "get"
 projects[acquia_search][download][url] = "http://network.acquia.com/files/downloads/acquia-search-current.tar.gz"
 projects[acquia_search][subdir] = "acquia"
 
+projects[ajax_load][version] = 1.x-dev
 projects[ajax_load][download][type] = "git"
-projects[ajax_load][download][url] = "http://git.drupal.org/project/ajax_load.git" 
 projects[ajax_load][download][revision] = "8b0921252fcf599e7b15276bd815bcf81521eb27"
 projects[ajax_load][subdir] = "contrib"
+
+; Commons Answers dependencies:
+projects[answers][version] = 2.x-dev
+projects[answers][download][type] = "git"
+projects[answers][download][revision] = "6.x-2.x"
+projects[answers][subdir] ="contrib"
+
+; http://drupal.org/node/1414914
+projects[answers][patch][] = "http://drupal.org/files/answers-menu-links-overridden.patch"
+
+projects[vote_up_down][version] = 3.x-dev
+projects[vote_up_down][download][type] = "git"
+projects[vote_up_down][download][revision] = "6.x-3.x"
+projects[vote_up_down][subdir] = "contrib"
+
+; http://drupal.org/node/1016804#comment-5463316
+projects[vote_up_down][patch][]  = "http://drupal.org/files/thumbs_up_down_widget-1016804-14.patch"
+
+projects[views_attach][version] = 2.x-dev
+projects[views_attach][download][type] = "git"
+projects[views_attach][download][revision] = 6.x-2.x
+projects[views_attach][subdir] = "contrib"
+
+; http://drupal.org/node/1409556#comment-5489412
+projects[views_attach][patch][] = "http://drupal.org/files/1409556-attach-empty-b.patch"
+
+; Temporarily grab VotingAPI from the 6.x-2.x
+; branch per http://drupal.org/node/1418000
+projects[votingapi][version] = 2.x-dev
+projects[votingapi][subdir] = "contrib"
+projects[votingapi][download][type] = "git"
+projects[votingapi][download][revision] = '6.x-2.x'
+
+projects[nodereference_count][subdir] = "contrib"
+projects[nodereference_url][subdir] = "contrib"
+; End Commons Answers dependencies
 
 projects[better_formats][subdir] = "contrib"
 
@@ -57,10 +93,9 @@ projects[context_og][version] = "3.0"
 
 projects[date][subdir] = "contrib"
 
-
+projects[diff][version] = 2.x-dev
 projects[diff][subdir] = "contrib"
 projects[diff][download][type] = "git"
-projects[diff][download][url] = "http://git.drupal.org/project/diff.git"
 projects[diff][download][revision] = "6.x-2.x"
 
 ; http://drupal.org/node/372957#comment-5458068
@@ -179,7 +214,7 @@ projects[og_aggregator][version] = "1.4"
 
 
 projects[og_features][subdir] = "contrib"
-projects[og_features][version] = "1.2"
+projects[og_features][version] = "1.x-dev"
 
 projects[og_invite_link][subdir] = "contrib"
 
@@ -195,6 +230,9 @@ projects[og_statistics][patch][] = "http://drupal.org/files/issues/og_statistics
 ; http://drupal.org/node/1162928#comment-4491270
 projects[og_statistics][patch][] = "http://drupal.org/files/issues/og_statistics-proper-determination-of-unapproved-1162928_0.patch"
 
+; http://drupal.org/node/1430246#comment-5566234
+projects[og_statistics][patch][] = "http://drupal.org/files/1430246-og_statistics-filter-group-posts-d.patch"
+
 projects[og_subgroups][subdir] = "contrib"
 
 
@@ -202,8 +240,8 @@ projects[password_policy][subdir] = "contrib"
 
 projects[pathauto][subdir] = "contrib"
 
+projects[quant][version] = 1.x-dev
 projects[quant][download][type] = "git"
-projects[quant][download][url] = "http://git.drupal.org/project/quant.git"
 projects[quant][download][revision] = "2d204b2"
 projects[quant][subdir] = "contrib"
 
@@ -225,15 +263,10 @@ projects[token][subdir] = "contrib"
 projects[transliteration][subdir] = "contrib"
 projects[transliteration][version] = "3.0"
 
+projects[userpoints_contrib][version] = 1.x-dev
 projects[userpoints_contrib][subdir] = "contrib"
 projects[userpoints_contrib][download][type] = "git"
-projects[userpoints_contrib][download][url] = "http://git.drupal.org/project/userpoints.git"
 projects[userpoints_contrib][download][revision] = "0359e9497882d98080b5854b19ebc1bd34a7c24a"
-
-; Based on the date of 5ae09b723a8197f29d9ee7f562777ef221cb16de from the GitHub Acquia Commons repo.
-projects[userpoints_contrib][download][type] = git
-projects[userpoints_contrib][download][url] = "http://git.drupal.org/project/userpoints_contrib.git"
-projects[userpoints_contrib][version] = "0359e9497882d98080b5854b19ebc1bd34a7c24a"
 
 projects[user_badges][subdir] = "contrib"
 projects[user_badges][version] = "1.6"
@@ -245,6 +278,7 @@ projects[user_badges][patch][] = "http://drupal.org/files/issues/user_badges-for
 ; http://drupal.org/node/986822#comment-4001216
 projects[user_badges][patch][] = "http://drupal.org/files/issues/user_badges-undefined-constant-986822.patch"
 
+projects[user_relationships][version] = 1.x-dev
 projects[user_relationships][subdir] = "contrib"
 projects[user_relationships][download][type] = "git"
 ; UR's last release was ~1 year ago with some non-trivial commits since then.
@@ -279,15 +313,23 @@ projects[views][subdir] = "contrib"
 ; http://drupal.org/node/402944#comment-4650020
 projects[views][patch][] = "http://drupal.org/files/issues/views-402944-31.patch"
 
+; The dev branch has a revised UI for determining cache criteria.
+projects[views_content_cache][subdir] = "contrib"
+projects[views_content_cache][download][type] = "git"
+projects[views_content_cache][download][url] = "http://git.drupal.org/project/views_content_cache.git"
+projects[views_content_cache][download][revision] = "6.x-2.x"
+
+projects[views_field_view][subdir] = "contrib"
+
+
 projects[views_slideshow][subdir] = "contrib"
 projects[views_slideshow][version] = "2.3"
 
 projects[wikitools][subdir] = "contrib"
 projects[wikitools][version] = "1.3"
 
-
+projects[wysiwyg][version] = 2.x-dev
 projects[wysiwyg][download][type] = "git"
-projects[wysiwyg][download][url] = "http://git.drupal.org/project/wysiwyg.git"
 projects[wysiwyg][download][revision] = "ddfaf684a45eb2ba3e4f866e5e5e6e1c10c8c020"
 projects[wysiwyg][subdir] = "contrib"
 
@@ -300,8 +342,8 @@ libraries[ckeditor][patch][] = "http://drupal.org/files/1337004-ckeditor-remove-
 projects[wysiwyg_filter][subdir] = "contrib"
 projects[wysiwyg_filter][version] = "1.5"
 
+projects[activity_log][version] = 2.x-dev
 projects[activity_log][download][type] = "git"
-projects[activity_log][download][url] = "http://git.drupal.org/project/activity_log.git"
 projects[activity_log][download][revision] = "6.x-2.x"
 projects[activity_log][type] = "module"
 projects[activity_log][subdir] = "contrib"
@@ -309,26 +351,30 @@ projects[activity_log][subdir] = "contrib"
 ; http://drupal.org/node/1306252#comment-5412352
 projects[activity_log][patch][] = "http://drupal.org/files/1306252-activity_log_node_og_dupes-b.patch"
 
+; http://drupal.org/node/1426576#comment-5596988
+projects[activity_log][patch][] = "http://drupal.org/files/1426576-activity-log-avatar-resize.patch"
+
+projects[digests][version] = 1.x-dev
 projects[digests][download][type] = "git"
-projects[digests][download][url] = "http://git.drupal.org/project/digests.git"
 projects[digests][download][revision] = "6.x-1.x"
 projects[digests][type] = "module"
 projects[digests][subdir] = "contrib"
 
+projects[tidy_node_links][version] = 1.x-dev
 projects[tidy_node_links][download][type] = "git"
 projects[tidy_node_links][download][url] = "http://git.drupal.org/sandbox/ezrag/1344006.git"
 projects[tidy_node_links][download][revision] = "6.x-1.x"
 projects[tidy_node_links][type] = "module"
 projects[tidy_node_links][subdir] = "contrib"
 
+projects[facebook_status][version] = 3.x-dev
 projects[facebook_status][download][type] = "git"
-projects[facebook_status][download][url] = "http://git.drupal.org/project/facebook_status.git"
 projects[facebook_status][download][revision] = "6.x-3.x"
 projects[facebook_status][subdir] = "contrib"
 
+projects[fbsmp][version] = 2.x-dev
 projects[fbsmp][subdir] = "contrib"
 projects[fbsmp][download][type] = "git"
-projects[fbsmp][download][url] = "http://git.drupal.org/project/fbsmp.git"
 projects[fbsmp][download][revision] = 6.x-2.x
 
 projects[mailhandler][subdir] = "contrib"
